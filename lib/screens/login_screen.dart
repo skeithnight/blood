@@ -1,12 +1,12 @@
-import './home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:blood/screens/main_screen.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginScreen extends StatefulWidget {
   static String tag = 'login-page';
-  _LoginPageState createState() => _LoginPageState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final logo = Hero(
@@ -47,7 +47,10 @@ class _LoginPageState extends State<LoginPage> {
           minWidth: 200.0,
           height: 42.0,
           onPressed: () {
-            Navigator.of(context).pushNamed(HomePage.tag);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => MainScreen()),
+            );
           },
           color: Colors.lightBlueAccent,
           child: Text(
@@ -79,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
             password,
             SizedBox(height: 24.0),
             loginButton,
-            forgotLabel 
+            forgotLabel
           ],
         ),
       ),
