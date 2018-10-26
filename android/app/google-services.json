@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1058315144058",
+    "firebase_url": "https://bloodstream-e0b54.firebaseio.com",
+    "project_id": "bloodstream-e0b54",
+    "storage_bucket": "bloodstream-e0b54.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1058315144058:android:bea70ef2a5819d4f",
+        "android_client_info": {
+          "package_name": "com.skripsi.blood"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1058315144058-t3qdqqmeitj5kdmb850iajeg175d4gb6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.skripsi.blood",
+            "certificate_hash": "0986237f5008676fe824307e31f1377a6e86b600"
+          }
+        },
+        {
+          "client_id": "1058315144058-oeevimi7istn764er0vjgo47523m7vdh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDH95y-04NeXpS_s3LLgn-SOGZ1ttsxEEM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1058315144058-oeevimi7istn764er0vjgo47523m7vdh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

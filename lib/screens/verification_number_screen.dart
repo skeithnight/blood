@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
-class RequestScreen extends StatelessWidget {
+class VerificationNumberScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return new Scaffold(
+      appBar: new AppBar(title: new Text("Verification"),),
       body: new Center(
-        child: new Text("Welcome Home!"),
+        child: new Text("Welcome Verification!"),
       ),
     );
   }
+
 }

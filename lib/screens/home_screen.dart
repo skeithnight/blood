@@ -5,11 +5,9 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return new Scaffold(
-      appBar: new AppBar(title: new Text("Home"),),
-      body: new Center(
-        child: new Text("Welcome Home!"),
-      ),
-    );
+        body: new Center(
+          child: new Text("Welcome Home!"),
+        ),
+      );
   }
-
 }
