@@ -63,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   FirebaseAuth.instance.currentUser().then((user) {
                     if (user != null) {
                       Navigator.of(context).pop();
-                      Navigator.of(context).pushReplacementNamed('');
+                      Navigator.of(context).pushReplacementNamed('/main');
                     } else {
                       Navigator.of(context).pop();
                       signIn();
@@ -80,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
     FirebaseAuth.instance
         .signInWithPhoneNumber(verificationId: verificationId, smsCode: smsCode)
         .then((user) {
-      Navigator.of(context).pushReplacementNamed("");
+      Navigator.of(context).pushReplacementNamed("/a");
     }).catchError((e) {
       print(e);
     });
@@ -97,9 +97,9 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
     final phonenumber = TextField(
-      decoration: InputDecoration(hintText: 'Enter Phone number'),
+      decoration: InputDecoration(hintText: 'Enter Phone number', prefixText: "+62"),
       onChanged: (value) {
-        this.phoneNo = value;
+        this.phoneNo = "+62"+value;
       },
     );
     final loginButton = Padding(
