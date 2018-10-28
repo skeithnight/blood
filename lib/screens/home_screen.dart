@@ -11,28 +11,33 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   StreamSubscription _subscriptionStokDarah;
-  List<String> goldDarah = ['A+','A-'];
+  List<String> goldDarah = ['A+', 'A-'];
   List<StokDarah> listStokDarah = new List();
 
-  void initState() { 
+  void initState() {
     for (var i = 0; i < goldDarah.length; i++) {
-    StokDarahController.getStokDarahStream(goldDarah[i], _updateStokDarah)
-        .then((StreamSubscription s) => _subscriptionStokDarah = s);
+      StokDarahController.getStokDarahStream(goldDarah[i], _updateStokDarah)
+          .then((StreamSubscription s) => _subscriptionStokDarah = s);
     }
     super.initState();
   }
+
   @override
-  void dispose() { 
-    if (_subscriptionStokDarah != null){
+  void dispose() {
+    if (_subscriptionStokDarah != null) {
       _subscriptionStokDarah.cancel();
     }
     super.dispose();
   }
-  _updateStokDarah(StokDarah data){
+
+  _updateStokDarah(StokDarah data) {
     listStokDarah.add(data);
     print(listStokDarah.length.toString());
     for (var stokDarah in listStokDarah) {
-      print("StokDarah => "+ stokDarah.key + " : "+ stokDarah.jumlah.toString());
+      print("StokDarah => " +
+          stokDarah.key +
+          " : " +
+          stokDarah.jumlah.toString());
     }
   }
   // final notesReference = FirebaseDatabase.instance.reference().child('notes');
@@ -48,14 +53,11 @@ class _HomeScreenState extends State<HomeScreen> {
   //   });
   // }
 
-  
-
-
   Widget userContent() => Container(
         width: double.infinity,
         height: 100.0,
         // margin: EdgeInsets.all(10.0),
-        child: Card( 
+        child: Card(
           child: Row(
             children: <Widget>[
               Expanded(
@@ -82,7 +84,18 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Card(
           child: Column(
             children: <Widget>[
-              Container( padding: EdgeInsets.all(10.0), child: Text("Stok Darah"),),
+              Container(
+                padding: EdgeInsets.all(10.0),
+                child: Text("Stok Darah"),
+              ),
+              Row(
+                children: <Widget>[
+                  // ListTile(
+                  //   leading: Text(listStokDarah[0].key),
+                  //   title: Text(listStokDarah[0].jumlah.toString()),
+                  // )
+                ],
+              )
               // listStokDarah(),
             ],
           ),
