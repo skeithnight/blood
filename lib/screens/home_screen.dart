@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'dart:async';
 import 'dart:convert';
+import 'dart:core';
 
 import 'package:blood/models/stok_darah_model.dart';
+import 'package:blood/screens/stok_darah_item.dart';
+import 'package:blood/models/event_model.dart';
 
 class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
@@ -11,89 +14,77 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   StreamSubscription _subscriptionStokDarah;
-  List<String> goldDarah = ['A+', 'A-'];
+  
   List<StokDarah> listStokDarah = new List();
+  List<EventModel> listEvent = new List();
 
   Widget _getStokDarah(context) {
     return StreamBuilder<Event>(
-        stream: FirebaseDatabase.instance.reference().child("stokDarah").onValue,
+        stream: FirebaseDatabase.instance.reference().onValue,
         builder: (BuildContext context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             print("FirebaseDatabase: Waiting......");
-            // return Navigator.of(context).pushNamed('/');
-            return new Center( child: Text("Waiting"),);
+            return new Center(
+              child: Text("Waiting"),
+            );
           } else {
             if (snapshot.hasData) {
-              // List<Map<String,dynamic>> map = json.decode(snapshot.data.snapshot.value).toString() ;
-              List<dynamic> map = snapshot.data.snapshot.value;
-              for (var item in map) {
+              var map = snapshot.data.snapshot.value;
+              List<dynamic> mapEvent = map["event"];
+              List<dynamic> mapStokDarah = map["stokDarah"];
+              for (var item in mapEvent) {
+                listEvent.add(new EventModel.fromSnapshot(item));
+              }
+              for (var item in mapStokDarah) {
                 listStokDarah.add(new StokDarah.fromSnapshot(item));
               }
-              print(listStokDarah[0].golonganDarah);
-              // print("GetStokDarah: "+map.length.toString() +" : "+map[0].toString());
-              // print(json.decode(snapshot.data.snapshot.value));
-              // String jsoncode = json.decode( snapshot.data.snapshot.value.toString());
-              // Map jsoncode = json.decode(snapshot.data.snapshot.toStringS());
-              // print("FirebaseDatabase : "+ jsoncode.toString()+" : ");
-              // return new MainScreen();
-              // return new MainScreen(firestore: firestore,
-              //     uuid: snapshot.data.uid);
-              return content();
+              return content(context);
             }
             print("Kosong");
-            return new Center( child: Text("kosong"),);
+            return new Center(
+              child: Text("kosong"),
+            );
             // return new LoginScreen();
           }
         });
   }
 
-  // void initState() {
-  //   FirebaseDatabase.instance.reference().child("stokDarah").onValue;
-  //   // for (var i = 0; i < goldDarah.length; i++) {
-  //   //   // StokDarahController.getStokDarahStream(goldDarah[i], _updateStokDarah)
-  //   //   //     .then((StreamSubscription s) => _subscriptionStokDarah = s);
-  //   // }
-  //   super.initState();
-  // }
-
-  // @override
-  // void dispose() {
-  //   if (_subscriptionStokDarah != null) {
-  //     _subscriptionStokDarah.cancel();
-  //   }
-  //   super.dispose();
-  // }
-
-  // _updateStokDarah(StokDarah data) {
-  //   listStokDarah.add(data);
-  //   print(listStokDarah.length.toString());
-  //   for (var stokDarah in listStokDarah) {
-  //     print("StokDarah => " +
-  //         stokDarah.key +
-  //         " : " +
-  //         stokDarah.jumlah.toString());
-  //   }
-  // }
-
   _golongandarah() {
     if (listStokDarah != null) {
       print(listStokDarah.length);
-      for (var stokDarah in listStokDarah) {
-        
-      return Text(stokDarah.golonganDarah);
-        // return ListTile(
-        //   leading: CircleAvatar(
-        //     backgroundColor: Colors.red,
-        //     child: Text(
-        //       stokDarah.key,
-        //       style: TextStyle(color: Colors.white),
-        //     ),
-        //   ),
-        //   title: Text(stokDarah.jumlah.toString()),
-        // );
+      List<StokDarah> stokDarahGenap = new List();
+      List<StokDarah> stokDarahGanjil = new List();
+      for (var i = 0; i < listStokDarah.length; i++) {
+        if (i.isOdd) {
+          stokDarahGanjil.add(listStokDarah[i]);
+        } else {
+          stokDarahGenap.add(listStokDarah[i]);
+        }
       }
-    }else{
-      return Text("ksoong");
+
+      // return Text("aa");
+      return Row(
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          Expanded(
+            flex: 1,
+            child: ListView.builder(
+              itemCount: stokDarahGenap.length,
+              itemBuilder: (BuildContext context, int index) =>
+                  StokDarahItem(stokDarahGenap[index]),
+            ),
+          ),
+          Expanded(
+              flex: 1,
+              child: ListView.builder(
+                itemCount: stokDarahGanjil.length,
+                itemBuilder: (BuildContext context, int index) =>
+                    StokDarahItem(stokDarahGanjil[index]),
+              ))
+        ],
+      );
+    } else {
+      return Text("kosong");
     }
   }
 
@@ -125,40 +116,37 @@ class _HomeScreenState extends State<HomeScreen> {
       );
   Widget stokDarahContent() => Container(
         width: double.infinity,
-        child: Card(
-          child: Column(
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.all(10.0),
-                child: Text("Stok Darah"),
-              ),
-              Row(
-                children: <Widget>[
-                  _golongandarah(),
-                  // ListTile(
-                  //   leading: Text(listStokDarah[0].golonganDarah),
-                  //   title: Text(listStokDarah[0].golonganDarah),
-                  // )
-                ],
-              )
-              // listStokDarah(),
-            ],
-          ),
-        ),
+        child: _golongandarah(),
       );
   Widget eventContent() => Container();
 
-  Widget content() => Scaffold(
-        body: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
-          child: Column(
-            children: <Widget>[
-              userContent(),
-              stokDarahContent(),
-              eventContent()
-            ],
-          ),
+  Widget content(context) => Scaffold(
+        body: Column(
+          children: <Widget>[
+            Expanded(
+              child: userContent(),
+              flex: 1,
+            ),
+            Expanded(
+              child: stokDarahContent(),
+              flex: 2,
+            ),
+            Expanded(
+              child: eventContent(),
+              flex: 3,
+            )
+          ],
         ),
+        // body: SingleChildScrollView(
+        //   padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+        //   child: Column(
+        //     children: <Widget>[
+        //       userContent(),
+        //       stokDarahContent(),
+        //       eventContent()
+        //     ],
+        //   ),
+        // ),
       );
 
   @override
