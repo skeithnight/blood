@@ -1,14 +1,14 @@
 import 'package:firebase_database/firebase_database.dart';
 
 class StokDarah{
-  String key;
+  String golonganDarah;
   int jumlah;
 
   StokDarah();
 
-  StokDarah.fromSnapshot(DataSnapshot snapshot)
-      : key = snapshot.key,
-        jumlah = snapshot.value["jumlah"];
+  StokDarah.fromSnapshot( Map<dynamic,dynamic> snapshot)
+      : golonganDarah = snapshot["golongan"],
+        jumlah = snapshot["jumlah"];
 
   toJson() {
     return {
