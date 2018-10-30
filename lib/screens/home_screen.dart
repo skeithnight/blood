@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'dart:core';
 
 import 'package:blood/models/stok_darah_model.dart';
-import 'package:blood/screens/stok_darah_item.dart';
+import 'package:blood/screens/items/stok_darah_item.dart';
 import 'package:blood/models/event_model.dart';
 
 class HomeScreen extends StatefulWidget {

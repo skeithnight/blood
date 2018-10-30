@@ -16,8 +16,8 @@ class MyApp extends StatelessWidget {
             // return Navigator.of(context).pushNamed('/');
             return new SplashScreen();
           } else {
-            if (snapshot.hasData) {
-              print( snapshot.data.uid+" : ");
+            if (snapshot.hasData) { 
+              print( snapshot.data.uid+" : "+snapshot.data.phoneNumber);
               return new MainScreen();
               // return new MainScreen(firestore: firestore,
               //     uuid: snapshot.data.uid);
