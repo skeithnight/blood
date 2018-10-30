@@ -14,11 +14,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   StreamSubscription _subscriptionStokDarah;
-  
+
   List<StokDarah> listStokDarah = new List();
   List<EventModel> listEvent = new List();
 
-  Widget _getStokDarah(context) {
+  Widget _getData(context) {
+    
     return StreamBuilder<Event>(
         stream: FirebaseDatabase.instance.reference().onValue,
         builder: (BuildContext context, snapshot) {
@@ -29,6 +30,8 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           } else {
             if (snapshot.hasData) {
+              listEvent = new List();
+              listStokDarah = new List();
               var map = snapshot.data.snapshot.value;
               List<dynamic> mapEvent = map["event"];
               List<dynamic> mapStokDarah = map["stokDarah"];
@@ -44,7 +47,6 @@ class _HomeScreenState extends State<HomeScreen> {
             return new Center(
               child: Text("kosong"),
             );
-            // return new LoginScreen();
           }
         });
   }
@@ -88,6 +90,14 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  _eventDonorDarah() {
+    return ListView.builder(
+      itemCount: listEvent.length,
+      itemBuilder: (BuildContext context, int index) =>
+          Card(child: ListTile( title: Text(listEvent[index].judulAcara), subtitle: Text(listEvent[index].tanggal),),)
+    );
+  }
+
   Widget userContent() => Container(
         width: double.infinity,
         height: 100.0,
@@ -118,7 +128,10 @@ class _HomeScreenState extends State<HomeScreen> {
         width: double.infinity,
         child: _golongandarah(),
       );
-  Widget eventContent() => Container();
+  Widget eventContent() => Container(
+        width: double.infinity,
+        child: _eventDonorDarah(),
+      );
 
   Widget content(context) => Scaffold(
         body: Column(
@@ -127,26 +140,18 @@ class _HomeScreenState extends State<HomeScreen> {
               child: userContent(),
               flex: 1,
             ),
+            Container( child: Card( child: Center( child: Container( padding: EdgeInsets.all(20.0), child: Text("Stok Darah PMI Bandung", style: TextStyle( fontSize:  20.0),),),),), width: double.infinity,),
             Expanded(
               child: stokDarahContent(),
               flex: 2,
             ),
+            Container( child: Card( child: Center( child: Container( padding: EdgeInsets.all(20.0), child: Text("Event Donor Darah", style: TextStyle( fontSize:  20.0),),),),), width: double.infinity,),
             Expanded(
               child: eventContent(),
               flex: 3,
             )
           ],
         ),
-        // body: SingleChildScrollView(
-        //   padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
-        //   child: Column(
-        //     children: <Widget>[
-        //       userContent(),
-        //       stokDarahContent(),
-        //       eventContent()
-        //     ],
-        //   ),
-        // ),
       );
 
   @override
@@ -154,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       color: Colors.grey,
-      home: _getStokDarah(context),
+      home: _getData(context),
     );
   }
 }

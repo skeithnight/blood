@@ -4,7 +4,7 @@ class EventModel{
   String tanggal;
   String judulAcara;
 
-  EveEventModelnt();
+  EventModel();
 
   EventModel.fromSnapshot( Map<dynamic,dynamic> snapshot)
       : tanggal = snapshot["tanggal"],

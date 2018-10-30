@@ -11,7 +11,7 @@ class StokDarahItem extends StatelessWidget {
         elevation: 10.0,
         child: ListTile(
           leading: CircleAvatar(
-            backgroundColor: Colors.red,
+            backgroundColor: Color.fromRGBO(206, 20, 20, 1.0),
             child: Text(
               data.golonganDarah,
               style: TextStyle(color: Colors.white, fontSize: 20.0),
