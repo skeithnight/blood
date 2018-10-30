@@ -23,7 +23,7 @@ class StokDarahItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(stokDarah.golonganDarah);
+    // print(stokDarah.golonganDarah);
     return _content(stokDarah);
   }
 }

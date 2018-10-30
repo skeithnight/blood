@@ -53,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _golongandarah() {
     if (listStokDarah != null) {
-      print(listStokDarah.length);
+      // print(listStokDarah.length);
       List<StokDarah> stokDarahGenap = new List();
       List<StokDarah> stokDarahGanjil = new List();
       for (var i = 0; i < listStokDarah.length; i++) {
