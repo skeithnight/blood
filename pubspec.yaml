@@ -24,6 +24,7 @@ dependencies:
   firebase_database:
   shared_preferences:
   json_annotation:
+  geolocator: 
   
   
 

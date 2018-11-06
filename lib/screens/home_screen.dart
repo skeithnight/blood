@@ -136,10 +136,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget content(context) => Scaffold(
         body: Column(
           children: <Widget>[
-            Expanded(
-              child: userContent(),
-              flex: 1,
-            ),
+            // Expanded(
+            //   child: userContent(),
+            //   flex: 1,
+            // ),
             Container( child: Card( child: Center( child: Container( padding: EdgeInsets.all(20.0), child: Text("Stok Darah PMI Bandung", style: TextStyle( fontSize:  20.0),),),),), width: double.infinity,),
             Expanded(
               child: stokDarahContent(),
