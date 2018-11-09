@@ -24,8 +24,8 @@ dependencies:
   firebase_database:
   shared_preferences:
   json_annotation:
-  geolocator: 
-  
+  geolocator: ^0.2.1
+  flutter_map:
   
 
 dev_dependencies:

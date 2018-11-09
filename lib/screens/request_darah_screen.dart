@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
+import 'package:blood/data.dart' as data;
+
 class RequestDarahScreen extends StatelessWidget {
   Future<Position> posisiSekarang() async {
     await Geolocator()
@@ -12,9 +14,7 @@ class RequestDarahScreen extends StatelessWidget {
   }
 
   void getPosition() {
-    posisiSekarang().then((onValue) {
-      print(onValue);
-    });
+    // print("lokasi: "+posisiSekarang().toString());
     statusGeoLocation().then((onValue) {
       print(onValue);
     });
@@ -31,13 +31,14 @@ class RequestDarahScreen extends StatelessWidget {
             elevation: 4.0,
             splashColor: Colors.blueGrey,
             onPressed: () {
+              getPosition();
               // Perform some action
             },
           ),
         ),
         body: new Center(
-          // child: getPosition(),
-        ),
+            // child: getPosition(),
+            ),
       );
   @override
   Widget build(BuildContext context) {
