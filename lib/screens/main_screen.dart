@@ -16,10 +16,12 @@ class MainScreen extends StatelessWidget {
     await FirebaseAuth.instance.signOut();
     await googleSignIn.signOut();
   }
+
   // Future<
-    // pindah ke activity request darah
-  void goToRequest(context){
-    Navigator.of(context).push( MaterialPageRoute(builder: (context) => requestDarah.RequestDarahScreen()));
+  // pindah ke activity request darah
+  void goToRequest(context) {
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => requestDarah.RequestDarahScreen()));
   }
 
   Widget bottomNavigator() => TabBar(
@@ -71,7 +73,7 @@ class MainScreen extends StatelessWidget {
                 ],
               ),
               floatingActionButton: new FloatingActionButton(
-                onPressed: ()=> goToRequest(context),
+                onPressed: () => goToRequest(context),
                 elevation: 5.0,
                 tooltip: "adada",
                 child: const Icon(Icons.add),

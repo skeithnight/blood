@@ -4,20 +4,20 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
 
-import 'package:blood/models/event_model.dart';
+import 'package:blood/models/request_darah_model.dart';
+import 'package:blood/screens/request_darah_detail.dart';
 
 class RequestScreen extends StatefulWidget {
   _RequestScreenState createState() => _RequestScreenState();
 }
 
 class _RequestScreenState extends State<RequestScreen> {
+  List<RequestDarahModel> listRequestDarah;
 
   Widget _getData(context) {
-
-    List<EventModel> listEventModel;
-    
     return StreamBuilder<Event>(
-        stream: FirebaseDatabase.instance.reference().child("requestDarah").onValue,
+        stream:
+            FirebaseDatabase.instance.reference().child("requestDarah").onValue,
         builder: (BuildContext context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             print("FirebaseDatabase: Waiting......");
@@ -26,42 +26,51 @@ class _RequestScreenState extends State<RequestScreen> {
             );
           } else {
             if (snapshot.hasData) {
-              listEventModel = new List();
-              List<EventModel> map = snapshot.data.snapshot.value;
-                            
-              print("Request: "+ json.encode(map) +" : ");
-              return Text("Request: "+ json.encode(map));
+              listRequestDarah = new List();
+              Map<dynamic, dynamic> map = snapshot.data.snapshot.value;
+              List<dynamic> list = map.values.toList();
+              for (var item in list) {
+                listRequestDarah.add(new RequestDarahModel.fromSnapshot(item));
+              }
+              // print(json.encode( listRequestDarah));
+              return content();
+            } else {
+              print("Kosong");
+              return new Center(
+                child: Text("kosong"),
+              );
             }
-            print("Kosong");
-            return new Center(
-              child: Text("kosong"),
-            );
           }
         });
+  }
+
+  Widget content() {
+    return ListView.builder(
+        itemCount: listRequestDarah.length,
+        itemBuilder: (BuildContext context, int index) => Card(
+              elevation: 5.0,
+              child: ListTile(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => RequestDarahDetailScreen(listRequestDarah[index])));
+                },
+                leading: CircleAvatar(
+                  backgroundColor: Color.fromRGBO(206, 20, 20, 1.0),
+                  child: Text(
+                    listRequestDarah[index].tipeDarah,
+                    style: TextStyle(color: Colors.white, fontSize: 20.0),
+                  ),
+                ),
+                title: Text(listRequestDarah[index].nama),
+                subtitle: Text(listRequestDarah[index].address),
+              ),
+            ));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          appBar: AppBar( 
-            title: TabBar(
-              tabs: [
-                Tab( text: "Pencari Donor",),
-                Tab( text: "Permintaan Darah"),
-              ],
-            ),
-          ),
-          body: TabBarView(
-            children: [
-              _getData(context),
-              Icon(Icons.directions_transit),
-            ],
-          ),
-        ),
-      ),
+      body: _getData(context),
     );
   }
 }
