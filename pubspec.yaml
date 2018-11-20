@@ -22,7 +22,8 @@ dependencies:
   firebase_auth:
   google_sign_in:
   firebase_database:
-  firebase_messaging: 0.2.1
+  firebase_messaging: ^2.1.0
+  http: ^0.12.0
   shared_preferences:
   json_annotation:
   geolocator:

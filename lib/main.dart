@@ -3,11 +3,45 @@ import 'package:blood/screens/login_screen.dart';
 import 'package:blood/screens/main_screen.dart';
 import 'package:blood/screens/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 void main() => runApp(new MyApp());
 
-class MyApp extends StatelessWidget {
-  Widget _handleCurrentScreen(context) {
+class MyApp extends StatefulWidget {
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
+  String fcmToken = '';
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // Firebase messaging
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) {
+        print('on message yooo $message');
+        // _showDialog(message);
+      },
+      onResume: (Map<String, dynamic> message) {
+        print('on resume $message');
+        // _showDialog(message);
+      },
+      onLaunch: (Map<String, dynamic> message) {
+        print('on launch $message');
+        // _showDialog(message);
+      },
+    );
+    _firebaseMessaging.requestNotificationPermissions(
+        const IosNotificationSettings(sound: true, badge: true, alert: true));
+    _firebaseMessaging.getToken().then((token) {
+      print(token);
+    });
+  }
+
+Widget _handleCurrentScreen(context) {
     return StreamBuilder<FirebaseUser>(
         stream: FirebaseAuth.instance.onAuthStateChanged,
         builder: (BuildContext context, snapshot) {
@@ -16,7 +50,7 @@ class MyApp extends StatelessWidget {
             // return Navigator.of(context).pushNamed('/');
             return new SplashScreen();
           } else {
-            if (snapshot.hasData) { 
+            if (snapshot.hasData) {
               print( snapshot.data.uid+" : "+snapshot.data.phoneNumber);
               return new MainScreen();
               // return new MainScreen(firestore: firestore,
@@ -39,85 +73,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-// // import 'package:flutter/material.dart';
-// // import 'package:flutter/services.dart';
-// // import 'package:google_places_picker/google_places_picker.dart';
-
-
-// // void main() => runApp(new MyApp());
-
-// // class MyApp extends StatefulWidget {
-// //   @override
-// //   _MyAppState createState() => new _MyAppState();
-// // }
-
-// // class _MyAppState extends State<MyApp> {
-// //   String _placeName = 'Unknown';
-
-// //   @override
-// //   initState() {
-// //     super.initState();
-// //   }
-
-// //   // Platform messages are asynchronous, so we initialize in an async method.
-// //   _showPlacePicker() async {
-// //     String placeName;
-// //     // Platform messages may fail, so we use a try/catch PlatformException.
-// //     var place = await PluginGooglePlacePicker.showPlacePicker();
-// //     placeName = place.name;
-
-
-// //     // If the widget was removed from the tree while the asynchronous platform
-// //     // message was in flight, we want to discard the reply rather than calling
-// //     // setState to update our non-existent appearance.
-// //     if (!mounted)
-// //       return;
-
-// //     setState(() {
-// //       _placeName = placeName;
-// //     });
-// //   }
-
-// //   _showAutocomplete() async {
-// //     String placeName;
-// //     // Platform messages may fail, so we use a try/catch PlatformException.
-// //     var place = await PluginGooglePlacePicker.showAutocomplete(PlaceAutocompleteMode.MODE_OVERLAY);
-// //     placeName = place.name;
-
-
-// //     // If the widget was removed from the tree while the asynchronous platform
-// //     // message was in flight, we want to discard the reply rather than calling
-// //     // setState to update our non-existent appearance.
-// //     if (!mounted)
-// //       return;
-
-// //     setState(() {
-// //       _placeName = placeName;
-// //     });
-// //   }
-
-// //   @override
-// //   Widget build(BuildContext context) {
-// //     return new MaterialApp(
-// //       home: new Scaffold(
-// //         appBar: new AppBar(
-// //           title: new Text('Place picker example app'),
-// //         ),
-// //         body: new Center(
-// //           child: new Column(
-// //             children: <Widget>[
-// //               new FlatButton(onPressed: _showPlacePicker, child: new Text("Show place picker")),
-// //               new FlatButton(onPressed: _showAutocomplete, child: new Text("Show autocomplete")),
-// //               new Row(
-// //                 children: <Widget>[
-// //                   new Text("Place name: "),
-// //                   new Text(_placeName)
-// //                 ],
-// //               )
-// //             ],
-// //           ),
-// //         ),
-// //       ),
-// //     );
-//   }
-// }

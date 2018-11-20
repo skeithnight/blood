@@ -5,6 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 
 import 'package:blood/screens/widgets/common_divided_widget.dart';
 import 'package:blood/data.dart' as data;
+import 'package:http/http.dart' as http;
 import 'package:blood/models/request_darah_model.dart';
 
 import 'main_screen.dart';
@@ -234,10 +235,12 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
           elevation: 7.0,
           onPressed: () {
             print(json.encode(requestDarahModel));
-            inputData();
+            pushNotif();
+            // inputData();
           },
         ),
       );
+
   inputData() {
     mainReference
         .child("requestDarah")
@@ -247,8 +250,20 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
         .catchError((onError) => _showDialog(onError));
   }
 
+  void pushNotif(){
+    var fcmServerKey = "AIzaSyBfkuO_B4ocomM9U3MtS-Ld-AQtEpG83Wg";
+    var data =
+        '{"notification": {"body": "this is a body","title": "this is a title"}, "priority": "high", "data": {"click_action": "FLUTTER_NOTIFICATION_CLICK", "id": "1", "status": "done"}}';
+    var url = "https://fcm.googleapis.com/fcm/send";
+    http.post(url, body: data, headers: {
+      "Authorization": "key=$fcmServerKey",
+      "Content-Type": "application/json"
+    }).then( _showDialog);
+  }
+
   void _showDialog(data) {
     // flutter defined function
+    print(data);
     showDialog(
       barrierDismissible: false,
       context: context,
