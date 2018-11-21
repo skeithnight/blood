@@ -42,7 +42,7 @@ class MainScreen extends StatelessWidget {
               text: "Request"),
         ],
       );
-  Widget appBar() => new AppBar(
+  Widget appBar() => new AppBar( title: Text("Blood Stream"),
         actions: <Widget>[
           IconButton(
             icon: Icon(

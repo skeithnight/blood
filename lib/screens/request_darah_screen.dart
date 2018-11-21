@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:blood/screens/widgets/common_divided_widget.dart';
 import 'package:blood/data.dart' as data;
 import 'package:http/http.dart' as http;
 import 'package:blood/models/request_darah_model.dart';
+import 'package:blood/screens/request_darah_detail.dart';
 
 import 'main_screen.dart';
 
@@ -18,7 +20,11 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
   RequestDarahModel requestDarahModel = new RequestDarahModel();
   final mainReference = FirebaseDatabase.instance.reference();
   // String _value = "A+";
-  List<String> listDarah = ["A+", "A-", "B+", "B-"];
+  List<String> listDarah = ["A+", "A-", "B+", "B-","O+","O-","AB+","AB-"];
+
+  // Firebase messaging
+  FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
+
   Widget identityCard() => Container(
       width: double.infinity,
       child: Card(
@@ -235,7 +241,7 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
           elevation: 7.0,
           onPressed: () {
             print(json.encode(requestDarahModel));
-            pushNotif();
+            pushNotif("adaada");
             // inputData();
           },
         ),
@@ -246,26 +252,34 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
         .child("requestDarah")
         .push()
         .set(requestDarahModel.toJson())
-        .then(_showDialog)
+        .then(pushNotif)
         .catchError((onError) => _showDialog(onError));
   }
 
-  void pushNotif(){
-    var fcmServerKey = "AIzaSyBfkuO_B4ocomM9U3MtS-Ld-AQtEpG83Wg";
-    var data =
-        '{"notification": {"body": "this is a body","title": "this is a title"}, "priority": "high", "data": {"click_action": "FLUTTER_NOTIFICATION_CLICK", "id": "1", "status": "done"}}';
+  void pushNotif(String cc){
+    // var fcmToken = "fWf8dBG4SIw:APA91bFpHMG8TSowERG-eHSRROg6tZujuBZj-1rcsX6q5tN35hhKHJgZjVjGaH_AK29g_9JXZV_qxzcpU3pGlpbq9hcVL2W5B9BTZFplqMLDo55MnOMaHyb1tlJx9o7cchVaLlwqpHol";
+    var fcmToken = "/topics/requestDarah";
+    String aa = requestDarahModel.address;
+    String bb = json.encode(requestDarahModel);
+    // print(requestDarahModel.toString());
+    var data1 = '{"to": "$fcmToken","notification": {"title": "Donorkan darah anda","body": "$aa"},"priority": "high", "data": {"click_action": "FLUTTER_NOTIFICATION_CLICK", "body":$bb}}';
+        // '{"notification": {"body": "this is a body","title": "this is a title"}, "priority": "high", "data": {"click_action": "FLUTTER_NOTIFICATION_CLICK", "id": "1", "status": "done"}, "to": "$fcmToken"}';
     var url = "https://fcm.googleapis.com/fcm/send";
-    http.post(url, body: data, headers: {
-      "Authorization": "key=$fcmServerKey",
+    http.post(url, body: data1, headers: {
+      "Authorization": "key=${data.fcmServerKey}",
       "Content-Type": "application/json"
-    }).then( _showDialog);
+    }).then(_showDialog);
   }
-
+// (response) {
+//   print("Response status: ${response.statusCode}");
+//   print("Response body: ${response.body}");
+// }
   void _showDialog(data) {
     // flutter defined function
-    print(data);
+    // Map map = data;
+    // print(data['statusCode']);
     showDialog(
-      barrierDismissible: false,
+      // barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         // return object of type Dialog
@@ -286,6 +300,39 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
         );
       },
     );
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // Firebase messaging
+    _firebaseMessaging.configure(
+      onMessage: (Map<dynamic, dynamic> message) {
+        // var aa = message['status']
+        // RequestDarahModel ac = new RequestDarahModel.fromSnapshot(message['data']['body']);
+        // print('adada : '+json.encode(ac));
+        // _showDialog(message);
+        RequestDarahModel ac = new RequestDarahModel.fromSnapshot(json.decode(message['data']['body']));
+        print('adada : '+json.encode(message['data']['body']));
+        print('ddddd : '+json.encode(ac));
+        Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => RequestDarahDetailScreen(ac)));
+      },
+      onResume: (Map<String, dynamic> message) {
+        print('on resume $message');
+        // _showDialog(message);
+      },
+      onLaunch: (Map<String, dynamic> message) {
+        print('on launch $message');
+        // _showDialog(message);
+      },
+    );
+    _firebaseMessaging.requestNotificationPermissions(
+        const IosNotificationSettings(sound: true, badge: true, alert: true));
+    _firebaseMessaging.getToken().then((token) {
+      print("adada : $token");
+    });
   }
 
   @override
