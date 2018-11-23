@@ -18,13 +18,29 @@ class _HomeScreenState extends State<HomeScreen> {
   List<StokDarah> listStokDarah = new List();
   List<EventModel> listEvent = new List();
 
+  void _onLoading(mcontext) {
+    showDialog(
+      context: mcontext,
+      barrierDismissible: false,
+      child: new Dialog(
+        child: new Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            new CircularProgressIndicator(),
+            new Text("Loading"),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _getData(context) {
-    
     return StreamBuilder<Event>(
         stream: FirebaseDatabase.instance.reference().onValue,
         builder: (BuildContext context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            print("FirebaseDatabase: Waiting......");
+            // _onLoading(context);
+            // print("FirebaseDatabase: Waiting......");
             return new Center(
               child: Text("Waiting"),
             );
@@ -92,10 +108,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _eventDonorDarah() {
     return ListView.builder(
-      itemCount: listEvent.length,
-      itemBuilder: (BuildContext context, int index) =>
-          Card(child: ListTile( title: Text(listEvent[index].judulAcara), subtitle: Text(listEvent[index].tanggal),),)
-    );
+        itemCount: listEvent.length,
+        itemBuilder: (BuildContext context, int index) => Card(
+              child: ListTile(
+                title: Text(listEvent[index].judulAcara),
+                subtitle: Text(listEvent[index].tanggal),
+              ),
+            ));
   }
 
   Widget userContent() => Container(
@@ -140,12 +159,38 @@ class _HomeScreenState extends State<HomeScreen> {
             //   child: userContent(),
             //   flex: 1,
             // ),
-            Container( child: Card( child: Center( child: Container( padding: EdgeInsets.all(20.0), child: Text("Stok Darah PMI Bandung", style: TextStyle( fontSize:  20.0),),),),), width: double.infinity,),
+            Container(
+              child: Card(
+                child: Center(
+                  child: Container(
+                    padding: EdgeInsets.all(20.0),
+                    child: Text(
+                      "Stok Darah PMI Bandung",
+                      style: TextStyle(fontSize: 20.0),
+                    ),
+                  ),
+                ),
+              ),
+              width: double.infinity,
+            ),
             Expanded(
               child: stokDarahContent(),
               flex: 2,
             ),
-            Container( child: Card( child: Center( child: Container( padding: EdgeInsets.all(20.0), child: Text("Event Donor Darah", style: TextStyle( fontSize:  20.0),),),),), width: double.infinity,),
+            Container(
+              child: Card(
+                child: Center(
+                  child: Container(
+                    padding: EdgeInsets.all(20.0),
+                    child: Text(
+                      "Event Donor Darah",
+                      style: TextStyle(fontSize: 20.0),
+                    ),
+                  ),
+                ),
+              ),
+              width: double.infinity,
+            ),
             Expanded(
               child: eventContent(),
               flex: 3,

@@ -32,15 +32,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    // getUser().then((user) {
-    //   print(user);
-    //   if (user != null) {
-    //     print("adada");
-    //     // send the user to the home page
-    //     MainScreen();
-    //   }
-    // });
-    // firebaseCloudMessaging_Listeners();
+    firebaseCloudMessaging_Listeners();
     // _navigateToItemDetail();
   }
 
@@ -65,15 +57,17 @@ class _MyAppState extends State<MyApp> {
       },
       onLaunch: (Map<String, dynamic> message) async {
         print('on launch $message');
-        // _navigateToItemDetail(message);
+        _navigateToItemDetail(context,message);
       },
     );
   }
 
-  _navigateToItemDetail() {
-    SplashScreen();
-    // Navigator.push(context,
-    //     MaterialPageRoute(builder: (BuildContext context) => SplashScreen()));
+  _navigateToItemDetail(BuildContext mcontext,Map<String,dynamic> message) {
+    // SplashScreen();
+    RequestDarahModel requestDarahModel = new RequestDarahModel.fromSnapshot(json.decode(message['body']));
+    Navigator.push(mcontext,
+        MaterialPageRoute(builder: (BuildContext context) => RequestDarahDetailScreen(requestDarahModel)));
+        // MaterialPageRoute(builder: (BuildContext context) => SplashScreen()));
   }
 
   void _onLoading() {
@@ -116,7 +110,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return _handleCurrentScreen(context);
-    
+    return _handleCurrentScreen(context);    
   }
 }
