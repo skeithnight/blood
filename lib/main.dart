@@ -92,51 +92,31 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  // Widget _handleCurrentScreen(context) {
-  //   return StreamBuilder<FirebaseUser>(
-  //       stream: FirebaseAuth.instance.onAuthStateChanged,
-  //       builder: (BuildContext context, snapshot) {
-  //         if (snapshot.connectionState == ConnectionState.waiting) {
-  //           print("Waiting......");
-  //           // _onLoading();
-  //           // return Navigator.of(context).pushNamed('/');
-  //           return new SplashScreen();
-  //         } else {
-  //           if (snapshot.hasData) {
-  //             print(snapshot.data.uid + " : " + snapshot.data.phoneNumber);
-  //             return new MainScreen();
-  //             // return new MainScreen(firestore: firestore,
-  //             //     uuid: snapshot.data.uid);
-  //           }
-  //           print("Kosong");
-  //           return new LoginScreen();
-  //         }
-  //       });
-  // }
+  Widget _handleCurrentScreen(context) {
+    return StreamBuilder<FirebaseUser>(
+        stream: FirebaseAuth.instance.onAuthStateChanged,
+        builder: (BuildContext context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            print("Waiting......");
+            // _onLoading();
+            // return Navigator.of(context).pushNamed('/');
+            return new SplashScreen();
+          } else {
+            if (snapshot.hasData) {
+              print(snapshot.data.uid + " : " + snapshot.data.phoneNumber);
+              return new MainScreen();
+              // return new MainScreen(firestore: firestore,
+              //     uuid: snapshot.data.uid);
+            }
+            print("Kosong");
+            return new LoginScreen();
+          }
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
-    // _firebaseMessaging.configure(
-    //   onMessage: (Map<String, dynamic> message) async {
-    //     print('on message $message');
-    //   },
-    //   onResume: (Map<String, dynamic> message) async {
-    //     print('on resume $message');
-    //   },
-    //   onLaunch: (Map<String, dynamic> message) async {
-    //     print('on launch $message');
-    //     // _navigateToItemDetail(message);
-    //   },
-    // );
-    getUser().then((user) {
-      if (user != null) {
-        print("user");
-        // send the user to the home page
-        return new MainScreen();
-      }else{
-        return new LoginScreen();
-      }
-    });
+    return _handleCurrentScreen(context);
     
   }
 }
