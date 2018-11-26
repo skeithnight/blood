@@ -105,6 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
         snapshot.data.TC_Aferesis.ab_pos +
         snapshot.data.BC.ab_pos;
   }
+
   int totalOPos(snapshot) {
     return snapshot.data.WB.o_pos +
         snapshot.data.PRC.o_pos +
@@ -130,6 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
         snapshot.data.TC_Aferesis.a_neg +
         snapshot.data.BC.a_neg;
   }
+
   int totalBNeg(snapshot) {
     return snapshot.data.WB.b_neg +
         snapshot.data.PRC.b_neg +
@@ -155,6 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
         snapshot.data.TC_Aferesis.ab_neg +
         snapshot.data.BC.ab_neg;
   }
+
   int totalONeg(snapshot) {
     return snapshot.data.WB.o_neg +
         snapshot.data.PRC.o_neg +
@@ -199,8 +202,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     children: <Widget>[
                       Expanded(
-                          flex: 1,
-                          child: StokDarahItem("A-", totalANeg(snapshot))),
+                        flex: 1,
+                        child: InkWell(
+                          child: StokDarahItem("A-", totalANeg(snapshot)),
+                          onTap: _modalBottomSheet,
+                        ),
+                      ),
                       Expanded(
                           flex: 1,
                           child: StokDarahItem("B-", totalBNeg(snapshot))),
@@ -223,6 +230,19 @@ class _HomeScreenState extends State<HomeScreen> {
         return CircularProgressIndicator();
       },
     );
+  }
+
+  void _modalBottomSheet() {
+    showModalBottomSheet(
+        context: context,
+        builder: (builder) {
+          return new Container(
+            color: Colors.yellowAccent,
+            child: new Center(
+              child: new Text("Hey guys !! it is a modal bottom sheet"),
+            ),
+          );
+        });
   }
 
   _eventDonorDarah() {
