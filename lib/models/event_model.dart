@@ -1,19 +1,23 @@
-import 'package:firebase_database/firebase_database.dart';
-
 class EventModel{
-  String tanggal;
-  String judulAcara;
+  String draw;
+  int recordsTotal;
+  int recordsFiltered;
+  List<dynamic> data;
 
   EventModel();
 
   EventModel.fromSnapshot( Map<dynamic,dynamic> snapshot)
-      : tanggal = snapshot["tanggal"],
-        judulAcara = snapshot["judulAcara"];
+      : draw = snapshot["draw"],
+        recordsTotal = snapshot["recordsTotal"],
+        recordsFiltered = snapshot["recordsFiltered"],
+        data = snapshot["data"];
 
   toJson() {
     return {
-      "judulAcara": judulAcara,
-      "tanggal": tanggal,
+      "draw": draw,
+      "recordsTotal": recordsTotal,
+      "recordsFiltered": recordsFiltered,
+      "data": data,
     };
   }
 }

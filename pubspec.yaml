@@ -32,7 +32,7 @@ dependencies:
   google_maps_webservice: ^0.0.9
   flutter_map:
   permission_handler: 
-  google_places_picker: ^0.0.9
+  google_places_picker: ^0.0.9 
   
   
 

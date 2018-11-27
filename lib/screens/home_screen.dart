@@ -5,10 +5,13 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:blood/controller/calculate_total_stok_darah.dart' as totalStok;
+import 'widgets/common_divided_widget.dart';
 
 import 'package:blood/models/stok_darah_model.dart';
 import 'package:blood/models/event_model.dart';
 import 'items/stok_darah_item.dart';
+import 'items/detail_stok_darah_item.dart';
+import 'package:blood/models/event_model.dart';
 
 class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
@@ -54,7 +57,8 @@ class _HomeScreenState extends State<HomeScreen> {
     //     });
   }
 
-  Future<StokDarah> fetchPost() async {
+// Stok Darah
+  Future<StokDarah> fetchGetStokDarah() async {
     final response =
         await http.get('https://pmikotabandung.org/api/stok_darah');
 
@@ -173,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _golongandarah() {
     return FutureBuilder<StokDarah>(
-      future: fetchPost(),
+      future: fetchGetStokDarah(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Row(
@@ -185,16 +189,36 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: <Widget>[
                       Expanded(
                           flex: 1,
-                          child: StokDarahItem("A+", totalAPos(snapshot))),
+                          child: InkWell(
+                            child: StokDarahItem("A+", totalAPos(snapshot)),
+                            onTap: () {
+                              _modalBottomSheet(snapshot.data, "A+");
+                            },
+                          )),
                       Expanded(
                           flex: 1,
-                          child: StokDarahItem("B+", totalBPos(snapshot))),
+                          child: InkWell(
+                            child: StokDarahItem("B+", totalBPos(snapshot)),
+                            onTap: () {
+                              _modalBottomSheet(snapshot.data, "B+");
+                            },
+                          )),
                       Expanded(
                           flex: 1,
-                          child: StokDarahItem("AB+", totalABPos(snapshot))),
+                          child: InkWell(
+                            child: StokDarahItem("AB+", totalABPos(snapshot)),
+                            onTap: () {
+                              _modalBottomSheet(snapshot.data, "AB+");
+                            },
+                          )),
                       Expanded(
                           flex: 1,
-                          child: StokDarahItem("O+", totalOPos(snapshot))),
+                          child: InkWell(
+                            child: StokDarahItem("O+", totalOPos(snapshot)),
+                            onTap: () {
+                              _modalBottomSheet(snapshot.data, "O+");
+                            },
+                          )),
                     ],
                   )),
               Expanded(
@@ -205,18 +229,35 @@ class _HomeScreenState extends State<HomeScreen> {
                         flex: 1,
                         child: InkWell(
                           child: StokDarahItem("A-", totalANeg(snapshot)),
-                          onTap: _modalBottomSheet,
+                          onTap: () {
+                            _modalBottomSheet(snapshot.data, "A-");
+                          },
                         ),
                       ),
                       Expanded(
                           flex: 1,
-                          child: StokDarahItem("B-", totalBNeg(snapshot))),
+                          child: InkWell(
+                            child: StokDarahItem("B-", totalBNeg(snapshot)),
+                            onTap: () {
+                              _modalBottomSheet(snapshot.data, "B-");
+                            },
+                          )),
                       Expanded(
                           flex: 1,
-                          child: StokDarahItem("AB-", totalABNeg(snapshot))),
+                          child: InkWell(
+                            child: StokDarahItem("AB-", totalABNeg(snapshot)),
+                            onTap: () {
+                              _modalBottomSheet(snapshot.data, "AB-");
+                            },
+                          )),
                       Expanded(
                           flex: 1,
-                          child: StokDarahItem("O-", totalONeg(snapshot))),
+                          child: InkWell(
+                            child: StokDarahItem("O-", totalONeg(snapshot)),
+                            onTap: () {
+                              _modalBottomSheet(snapshot.data, "O-");
+                            },
+                          )),
                     ],
                   )),
             ],
@@ -227,35 +268,164 @@ class _HomeScreenState extends State<HomeScreen> {
         }
 
         // By default, show a loading spinner
-        return CircularProgressIndicator();
+        return Center(child: CircularProgressIndicator());
       },
     );
   }
 
-  void _modalBottomSheet() {
+  void _modalBottomSheet(StokDarah snapshot, String golDar) {
     showModalBottomSheet(
         context: context,
         builder: (builder) {
           return new Container(
-            color: Colors.yellowAccent,
-            child: new Center(
-              child: new Text("Hey guys !! it is a modal bottom sheet"),
+            child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
+              Expanded(
+                  flex: 1,
+                  child: Column(children: <Widget>[
+                    Expanded(
+                      flex: 1,
+                      child: DetailStokDarahItem("WB", golDar, snapshot.WB),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: DetailStokDarahItem("WE", golDar, snapshot.WE),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: DetailStokDarahItem("AHF", golDar, snapshot.AHF),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: DetailStokDarahItem("BC", golDar, snapshot.BC),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: DetailStokDarahItem("FFP", golDar, snapshot.FFP),
+                    ),
+                  ])),
+              Expanded(
+                  flex: 1,
+                  child: Column(children: <Widget>[
+                    Expanded(
+                      flex: 1,
+                      child: DetailStokDarahItem("TC", golDar, snapshot.TC),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: DetailStokDarahItem(
+                          "TC Aferesis", golDar, snapshot.TC_Aferesis),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: DetailStokDarahItem("PRD", golDar, snapshot.PRC),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: DetailStokDarahItem("FP", golDar, snapshot.FP),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: DetailStokDarahItem("LP", golDar, snapshot.LP),
+                    ),
+                  ]))
+            ]),
+          );
+        });
+  }
+
+// Event
+  Future<EventModel> fetchPostEvent() async {
+    String url = "https://pmikotabandung.org/jadwal/get_data_jadwal_pencarian";
+    final response = await http.post(url,
+        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+        encoding: Encoding.getByName("utf8"),
+        body: "draw=1&start=0&length=100");
+
+    if (response.statusCode == 200) {
+      // If the call to the server was successful, parse the JSON
+      try {
+        Map<String, dynamic> map = json.decode(response.body);
+        return EventModel.fromSnapshot(map);
+      } catch (e) {
+        print("gagal: " + e.toString());
+      }
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('Failed to load post');
+    }
+  }
+
+  _eventDonorDarah() {
+    return FutureBuilder<EventModel>(
+        future: fetchPostEvent(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            print(json.encode(snapshot.data.data));
+            return ListView.builder(
+                itemCount: snapshot.data.data.length,
+                itemBuilder: (BuildContext context, int index) => Card(
+                      child: ListTile(
+                        onTap: () {
+                          _modalEventBottomSheet(snapshot.data.data[index]);
+                        },
+                        title: Text(snapshot.data.data[index][1]),
+                        subtitle: Text(snapshot.data.data[index][2]),
+                      ),
+                    ));
+          } else if (snapshot.hasError) {
+            return Text("${snapshot.error}");
+          }
+          // By default, show a loading spinner
+          return Center(child: CircularProgressIndicator());
+        });
+  }
+
+  void _modalEventBottomSheet(List<dynamic> data) {
+    showModalBottomSheet(
+        context: context,
+        builder: (builder) {
+          return new Container(
+            padding: EdgeInsets.all(10.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text("Tanggal & Waktu", style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold)),
+                CommonDivider(),
+                SizedBox(
+                  height: 5.0,
+                ),
+                Text(data[1]+", "+data[3]),
+                CommonDivider(),
+                SizedBox(
+                  height: 5.0,
+                ),
+                Text("Lokasi Event", style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold)),
+                CommonDivider(),
+                SizedBox(
+                  height: 5.0,
+                ),
+                Text(data[2]+", "+data[4]),
+                CommonDivider(),
+                SizedBox(
+                  height: 5.0,
+                ),
+                Text("Target Pendonor", style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold)),
+                CommonDivider(),
+                SizedBox(
+                  height: 5.0,
+                ),
+                Text(data[5]+" Orang"),
+                CommonDivider(),
+                SizedBox(
+                  height: 20.0,
+                ),
+              ],
             ),
           );
         });
   }
 
-  _eventDonorDarah() {
-    return ListView.builder(
-        itemCount: listEvent.length,
-        itemBuilder: (BuildContext context, int index) => Card(
-              child: ListTile(
-                title: Text(listEvent[index].judulAcara),
-                subtitle: Text(listEvent[index].tanggal),
-              ),
-            ));
-  }
-
+// main menu
   Widget content() => Scaffold(
         body: Column(
           children: <Widget>[
