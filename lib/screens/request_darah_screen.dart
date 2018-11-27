@@ -21,6 +21,7 @@ class RequestDarahScreen extends StatefulWidget {
 class _RequestDarahScreenState extends State<RequestDarahScreen> {
   RequestDarahModel requestDarahModel = new RequestDarahModel();
   Position _position;
+  bool isLoadinginput = false;
 
   final mainReference = FirebaseDatabase.instance.reference();
   // String _value = "A+";
@@ -41,7 +42,8 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       // Geolocator geolocator = Geolocator()..forceAndroidLocationManager = true;
-      position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      position = await Geolocator()
+          .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
       print("position");
     } on Exception {
       print("object");
@@ -177,7 +179,9 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
           )));
 
   lokasiDonor() {
-    return Text(requestDarahModel.latitude.toString()+" : "+ requestDarahModel.longitude.toString());
+    return Text(requestDarahModel.latitude.toString() +
+        " : " +
+        requestDarahModel.longitude.toString());
     // if (requestDarahModel.latitude == null) {
     //   return RaisedButton(
     //     child: Text("Location"),
@@ -262,25 +266,34 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
   Widget bottomButton() => Container(
         width: double.infinity,
         margin: EdgeInsets.all(10.0),
-        child: RaisedButton(
-          child: Text("Request"),
-          color: Colors.blue,
-          textColor: Colors.white,
-          elevation: 7.0,
-          onPressed: () {
-            if (requestDarahModel.address == null ||
-                requestDarahModel.description == null ||
-                requestDarahModel.latitude == null ||
-                requestDarahModel.longitude == null ||
-                requestDarahModel.nama == null ||
-                requestDarahModel.noTelp == null ||
-                requestDarahModel.tipeDarah == null) {
-              tampilDialog("Alert", "Sorry data is incomplete");
-            } else {
-              inputData();
-            }
-          },
-        ),
+        child: isLoadinginput == true
+            ? Center(child: CircularProgressIndicator())
+            : RaisedButton(
+                child: Text("Request"),
+                color: Colors.blue,
+                textColor: Colors.white,
+                elevation: 7.0,
+                onPressed: () {
+                  if (requestDarahModel.address == null ||
+                      requestDarahModel.description == null ||
+                      requestDarahModel.latitude == null ||
+                      requestDarahModel.longitude == null ||
+                      requestDarahModel.nama == null ||
+                      requestDarahModel.noTelp == null ||
+                      requestDarahModel.tipeDarah == null) {
+                    tampilDialog("Alert", "Sorry data is incomplete");
+                  } else {
+                    setState(() {
+                      isLoadinginput = true;
+                    });
+                    try {
+                    inputData();                      
+                    } catch (e) {
+                      print(e.toString());
+                    }
+                  }
+                },
+              ),
       );
 
   inputData() {
@@ -288,11 +301,11 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
         .child("requestDarah")
         .push()
         .set(requestDarahModel.toJson())
-        .then(pushNotif)
-        .catchError((onError) => _showDialog(onError));
+        .then((value){pushNotif();})
+        .catchError((onError) => _showDialog());
   }
 
-  void pushNotif(String cc) {
+  void pushNotif() {
     // var fcmToken = "fWf8dBG4SIw:APA91bFpHMG8TSowERG-eHSRROg6tZujuBZj-1rcsX6q5tN35hhKHJgZjVjGaH_AK29g_9JXZV_qxzcpU3pGlpbq9hcVL2W5B9BTZFplqMLDo55MnOMaHyb1tlJx9o7cchVaLlwqpHol";
     var fcmToken = "/topics/requestDarah";
     String aa = requestDarahModel.address;
@@ -305,7 +318,7 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
     http.post(url, body: data1, headers: {
       "Authorization": "key=${data.fcmServerKey}",
       "Content-Type": "application/json"
-    }).then(_showDialog);
+    }).then((value){print('cc');_showDialog();});
   }
 
   void tampilDialog(String tittle, String message) {
@@ -332,7 +345,7 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
     );
   }
 
-  void _showDialog(data) {
+  void _showDialog() {
     showDialog(
       barrierDismissible: false,
       context: context,
