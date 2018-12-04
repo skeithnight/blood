@@ -15,22 +15,35 @@ class _LoginScreenState extends State<LoginScreen> {
   String phoneNo;
   String smsCode;
   String verificationId;
+  bool isLoading = false;
 
   Future<void> verifyPhone() async {
+    setState(() {
+      isLoading = true;
+    });
     final PhoneCodeAutoRetrievalTimeout autoRetrieve = (String verId) {
       this.verificationId = verId;
     };
     final PhoneCodeSent smsCodeSent = (String verId, [int forceCodeResend]) {
       this.verificationId = verId;
-      smsCodeDialog(context).then((value) {
-        print('Signed in');
-      });
+      print("VerID : " + verId);
+      if (this.verificationId != null) {
+        smsCodeDialog(context).then((value) {
+          print('Signed in');
+        });
+      }
     };
     final PhoneVerificationCompleted verifiedSuccess = (FirebaseUser user) {
       print('verified');
+      setState(() {
+        isLoading = false;
+      });
     };
     final PhoneVerificationFailed verifiedFailed = (AuthException exception) {
       print('${exception.message}');
+      setState(() {
+        isLoading = false;
+      });
     };
     await FirebaseAuth.instance.verifyPhoneNumber(
       phoneNumber: this.phoneNo,
@@ -43,6 +56,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<bool> smsCodeDialog(BuildContext context) {
+      setState(() {
+        isLoading = false;
+      });
     return showDialog(
         context: context,
         barrierDismissible: false,
@@ -96,9 +112,10 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
     final phonenumber = TextField(
-      decoration: InputDecoration(hintText: 'Enter Phone number', prefixText: "+62"),
+      decoration:
+          InputDecoration(hintText: 'Enter Phone number', prefixText: "+62"),
       onChanged: (value) {
-        this.phoneNo = "+62"+value;
+        this.phoneNo = "+62" + value;
       },
     );
     final loginButton = Padding(
@@ -130,12 +147,18 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(height: 48.0),
             phonenumber,
             SizedBox(height: 24.0),
-            loginButton
+            isLoading == true
+                ? Center(child: CircularProgressIndicator())
+                : loginButton
           ],
         ),
       ),
     );
 
-    return MaterialApp( debugShowCheckedModeBanner: false, routes: routes, home: content,);
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      routes: routes,
+      home: content,
+    );
   }
 }

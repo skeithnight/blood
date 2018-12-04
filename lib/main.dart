@@ -92,15 +92,11 @@ class _MyAppState extends State<MyApp> {
         builder: (BuildContext context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             print("Waiting......");
-            // _onLoading();
-            // return Navigator.of(context).pushNamed('/');
             return new SplashScreen();
           } else {
             if (snapshot.hasData) {
               print(snapshot.data.uid + " : " + snapshot.data.phoneNumber);
               return new MainScreen();
-              // return new MainScreen(firestore: firestore,
-              //     uuid: snapshot.data.uid);
             }
             print("Kosong");
             return new LoginScreen();
