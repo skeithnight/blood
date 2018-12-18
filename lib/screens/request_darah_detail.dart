@@ -4,10 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:url_launcher/url_launcher.dart';
-<<<<<<< HEAD
-=======
 import 'package:firebase_auth/firebase_auth.dart';
->>>>>>> 6b27894b4e26bcf7bf6b026641288ab07f379657
 
 import 'package:blood/screens/widgets/common_divided_widget.dart';
 import 'package:blood/data.dart' as data;
@@ -18,10 +15,6 @@ import 'main_screen.dart';
 class RequestDarahDetailScreen extends StatefulWidget {
   final RequestDarahModel requestDarahModel;
   RequestDarahDetailScreen(this.requestDarahModel);
-<<<<<<< HEAD
-  List<String> listDarah = ["A+", "A-", "B+", "B-", "0+", "0-", "AB+", "AB-"];
-  BuildContext mContext;
-=======
   _RequestDarahDetailScreenState createState() =>
       _RequestDarahDetailScreenState();
 }
@@ -46,20 +39,14 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
       this.phoneNumber = user.phoneNumber;
     });
   }
->>>>>>> 6b27894b4e26bcf7bf6b026641288ab07f379657
 
   Widget mapsLocation() => Container(
         width: double.infinity,
         height: 300.0,
         child: new FlutterMap(
           options: new MapOptions(
-<<<<<<< HEAD
-            center: new LatLng(
-                requestDarahModel.latitude, requestDarahModel.longitude),
-=======
             center: new LatLng(widget.requestDarahModel.latitude,
                 widget.requestDarahModel.longitude),
->>>>>>> 6b27894b4e26bcf7bf6b026641288ab07f379657
             zoom: 13.0,
           ),
           layers: [
@@ -77,13 +64,8 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
                 new Marker(
                   width: 80.0,
                   height: 80.0,
-<<<<<<< HEAD
-                  point: new LatLng(
-                      requestDarahModel.latitude, requestDarahModel.longitude),
-=======
                   point: new LatLng(widget.requestDarahModel.latitude,
                       widget.requestDarahModel.longitude),
->>>>>>> 6b27894b4e26bcf7bf6b026641288ab07f379657
                   builder: (ctx) => new Container(
                         child: Icon(Icons.place),
                       ),
@@ -117,67 +99,11 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
                   "Name",
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-<<<<<<< HEAD
-                Text(requestDarahModel.nama),
-                // Text("Phone Number", style: TextStyle( fontWeight: FontWeight.bold),),
-                // Text( requestDarahModel.noTelp),
-=======
                 Text(widget.requestDarahModel.nama),
->>>>>>> 6b27894b4e26bcf7bf6b026641288ab07f379657
                 Text(
                   "Address",
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-<<<<<<< HEAD
-                Text(requestDarahModel.address),
-                Center(
-                  child: Container(
-                    width: 100.0,
-                    child: Row(
-                      children: <Widget>[
-                        Container(
-                          child: Column(
-                            children: <Widget>[
-                              IconButton(
-                                icon: Icon(Icons.call),
-                                onPressed: () {
-                                  tampilDialog(
-                                      "Information",
-                                      "Kapan terakhir kali anda donor darah ?",
-                                      "telp");
-                                },
-                              ),
-                              Text(
-                                "Call",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          child: Column(
-                            children: <Widget>[
-                              IconButton(
-                                icon: Icon(Icons.message),
-                                onPressed: () {
-                                  tampilDialog(
-                                      "Information",
-                                      "Kapan terakhir kali anda donor darah ?",
-                                      "sms");
-                                },
-                              ),
-                              Text(
-                                "SMS",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-=======
                 Text(widget.requestDarahModel.address),
                 Center(
                     child: Container(
@@ -213,7 +139,6 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
                     ),
                   ]),
                 )),
->>>>>>> 6b27894b4e26bcf7bf6b026641288ab07f379657
               ],
             ),
           )));
@@ -238,11 +163,7 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
                   height: 5.0,
                 ),
                 Text(
-<<<<<<< HEAD
-                  requestDarahModel.description,
-=======
                   widget.requestDarahModel.description,
->>>>>>> 6b27894b4e26bcf7bf6b026641288ab07f379657
                 )
               ],
             ),
@@ -279,12 +200,8 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-<<<<<<< HEAD
-                              selected: requestDarahModel.tipeDarah == pc,
-=======
                               selected:
                                   widget.requestDarahModel.tipeDarah == pc,
->>>>>>> 6b27894b4e26bcf7bf6b026641288ab07f379657
                             ),
                           ))
                       .toList(),
@@ -352,11 +269,7 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
   void tampilDialog(String tittle, String message, String level) {
     showDialog(
       context: mContext,
-<<<<<<< HEAD
-      builder: (BuildContext mContext) {
-=======
       builder: (BuildContext context) {
->>>>>>> 6b27894b4e26bcf7bf6b026641288ab07f379657
         // return object of type Dialog
         return AlertDialog(
           title: new Text(tittle),
@@ -364,16 +277,6 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
-<<<<<<< HEAD
-              child: new Text("< 8 Minggu"),
-              onPressed: () {
-                Navigator.of(mContext).pop();
-              },
-            ),
-            new FlatButton(
-              child: new Text("> 8 Minggu"),
-              onPressed: () {_launchURL(level);},
-=======
               child: new Text("<8 Minggu"),
               onPressed: () {
                 Navigator.of(context).pop();
@@ -384,7 +287,6 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
               onPressed: () {
                 _launchURL(level);
               },
->>>>>>> 6b27894b4e26bcf7bf6b026641288ab07f379657
             ),
           ],
         );
@@ -393,32 +295,21 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
   }
 
   _launchURL(String level) async {
-<<<<<<< HEAD
-    final String notelp = requestDarahModel.noTelp;
-    var url;
-    if (level == "telp") {
-=======
     var url;
     String notelp = widget.requestDarahModel.noTelp;
     if (level == "call") {
->>>>>>> 6b27894b4e26bcf7bf6b026641288ab07f379657
       url = 'tel:$notelp';
     } else {
       url = 'sms:$notelp';
     }
     if (await canLaunch(url)) {
-<<<<<<< HEAD
-=======
       inputData();
->>>>>>> 6b27894b4e26bcf7bf6b026641288ab07f379657
       await launch(url);
     } else {
       throw 'Could not launch $url';
     }
   }
 
-<<<<<<< HEAD
-=======
   inputData() {
     List<dynamic> listResponden;
     if (widget.requestDarahModel.listResponden != null) {
@@ -436,7 +327,6 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
         .set(widget.requestDarahModel.toJson()).then((onValue){print("Successful");}).catchError((onError){print(onError);});
   }
 
->>>>>>> 6b27894b4e26bcf7bf6b026641288ab07f379657
   @override
   Widget build(BuildContext context) {
     this.mContext = context;
