@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:blood/screens/widgets/common_divided_widget.dart';
 import 'package:blood/data.dart' as data;
@@ -23,17 +24,23 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
   Position _position;
   bool isLoadinginput = false;
 
-  final mainReference = FirebaseDatabase.instance.reference();
   // String _value = "A+";
   List<String> listDarah = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
 
   // Firebase messaging
   FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final mainReference = FirebaseDatabase.instance.reference();
 
   @override
   void initState() {
     super.initState();
     _initPlatformState();
+  }
+
+  void getUser() async {
+    FirebaseUser user = await _auth.currentUser();
+    print(user.phoneNumber);
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -287,7 +294,7 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
                       isLoadinginput = true;
                     });
                     try {
-                    inputData();                      
+                      inputData();
                     } catch (e) {
                       print(e.toString());
                     }
@@ -301,8 +308,9 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
         .child("requestDarah")
         .push()
         .set(requestDarahModel.toJson())
-        .then((value){pushNotif();})
-        .catchError((onError) => _showDialog());
+        .then((value) {
+      pushNotif();
+    }).catchError((onError) => _showDialog());
   }
 
   void pushNotif() {
@@ -318,7 +326,10 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
     http.post(url, body: data1, headers: {
       "Authorization": "key=${data.fcmServerKey}",
       "Content-Type": "application/json"
-    }).then((value){print('cc');_showDialog();});
+    }).then((value) {
+      print('cc');
+      _showDialog();
+    });
   }
 
   void tampilDialog(String tittle, String message) {
