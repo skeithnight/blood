@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:blood/screens/widgets/common_divided_widget.dart';
 import 'package:blood/data.dart' as data;
@@ -10,17 +12,41 @@ import 'package:blood/models/request_darah_model.dart';
 
 import 'main_screen.dart';
 
-class RequestDarahDetailScreen extends StatelessWidget {
+class RequestDarahDetailScreen extends StatefulWidget {
   final RequestDarahModel requestDarahModel;
   RequestDarahDetailScreen(this.requestDarahModel);
-  List<String> listDarah = ["A+", "A-", "B+", "B-","0+", "0-", "AB+", "AB-"];
-  
+  _RequestDarahDetailScreenState createState() =>
+      _RequestDarahDetailScreenState();
+}
+
+class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
+  BuildContext mContext;
+  List<String> listDarah = ["A+", "A-", "B+", "B-", "0+", "0-", "AB+", "AB-"];
+  // Firebase messaging
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final mainReference = FirebaseDatabase.instance.reference();
+  String phoneNumber = "";
+
+  @override
+  void initState() {
+    super.initState();
+    getUser();
+  }
+
+  void getUser() async {
+    FirebaseUser user = await _auth.currentUser();
+    setState(() {
+      this.phoneNumber = user.phoneNumber;
+    });
+  }
+
   Widget mapsLocation() => Container(
         width: double.infinity,
         height: 300.0,
         child: new FlutterMap(
           options: new MapOptions(
-            center: new LatLng(requestDarahModel.latitude, requestDarahModel.longitude),
+            center: new LatLng(widget.requestDarahModel.latitude,
+                widget.requestDarahModel.longitude),
             zoom: 13.0,
           ),
           layers: [
@@ -38,7 +64,8 @@ class RequestDarahDetailScreen extends StatelessWidget {
                 new Marker(
                   width: 80.0,
                   height: 80.0,
-                  point: new LatLng(requestDarahModel.latitude, requestDarahModel.longitude),
+                  point: new LatLng(widget.requestDarahModel.latitude,
+                      widget.requestDarahModel.longitude),
                   builder: (ctx) => new Container(
                         child: Icon(Icons.place),
                       ),
@@ -68,12 +95,50 @@ class RequestDarahDetailScreen extends StatelessWidget {
                 SizedBox(
                   height: 5.0,
                 ),
-                Text("Name", style: TextStyle( fontWeight: FontWeight.bold),),
-                Text( requestDarahModel.nama),
-                Text("Phone Number", style: TextStyle( fontWeight: FontWeight.bold),),
-                Text( requestDarahModel.noTelp),
-                Text("Address", style: TextStyle( fontWeight: FontWeight.bold),),
-                Text( requestDarahModel.address),
+                Text(
+                  "Name",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(widget.requestDarahModel.nama),
+                Text(
+                  "Address",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(widget.requestDarahModel.address),
+                Center(
+                    child: Container(
+                  width: 100.0,
+                  child: Row(children: <Widget>[
+                    Container(
+                      child: Column(
+                        children: <Widget>[
+                          IconButton(
+                            icon: Icon(Icons.call),
+                            onPressed: () {
+                              tampilDialog("Information",
+                                  "Kapan terakhir anda donor darah?", "call");
+                            },
+                          ),
+                          Text("Call"),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      child: Column(
+                        children: <Widget>[
+                          IconButton(
+                            icon: Icon(Icons.sms),
+                            onPressed: () {
+                              tampilDialog("Information",
+                                  "Kapan terakhir anda donor darah?", "sms");
+                            },
+                          ),
+                          Text("SMS"),
+                        ],
+                      ),
+                    ),
+                  ]),
+                )),
               ],
             ),
           )));
@@ -97,7 +162,9 @@ class RequestDarahDetailScreen extends StatelessWidget {
                 SizedBox(
                   height: 5.0,
                 ),
-                Text(requestDarahModel.description,)
+                Text(
+                  widget.requestDarahModel.description,
+                )
               ],
             ),
           )));
@@ -126,24 +193,57 @@ class RequestDarahDetailScreen extends StatelessWidget {
                       .map((pc) => Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: ChoiceChip(
-                                selectedColor: Colors.yellow,
-                                label: Text(
-                                  pc,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              selectedColor: Colors.yellow,
+                              label: Text(
+                                pc,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                selected: requestDarahModel.tipeDarah == pc,),
+                              ),
+                              selected:
+                                  widget.requestDarahModel.tipeDarah == pc,
+                            ),
                           ))
                       .toList(),
                 ),
               ],
             ),
           )));
+  Widget respondenCard() => Container(
+      alignment: Alignment.topRight,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              "Responden",
+              style: TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            SizedBox(
+              height: 5.0,
+            ),
+            Text(
+              widget.requestDarahModel.listResponden == null
+                  ? "0"
+                  : widget.requestDarahModel.listResponden.length.toString(),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ));
   Widget content() => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          identityCard(),
+          Stack(
+            children: <Widget>[
+              identityCard(),
+              respondenCard(),
+            ],
+          ),
           CommonDivider(),
           SizedBox(
             height: 5.0,
@@ -154,16 +254,84 @@ class RequestDarahDetailScreen extends StatelessWidget {
             height: 5.0,
           ),
           listDarahCard(),
+          // CommonDivider(),
+          // SizedBox(
+          //   height: 5.0,
+          // ),
+          // respondenCard(),
           CommonDivider(),
           SizedBox(
             height: 20.0,
           ),
         ],
       );
-  
+
+  void tampilDialog(String tittle, String message, String level) {
+    showDialog(
+      context: mContext,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text(tittle),
+          content: new Text(message),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("<8 Minggu"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            new FlatButton(
+              child: new Text(">8 Minggu"),
+              onPressed: () {
+                _launchURL(level);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  _launchURL(String level) async {
+    var url;
+    String notelp = widget.requestDarahModel.noTelp;
+    if (level == "call") {
+      url = 'tel:$notelp';
+    } else {
+      url = 'sms:$notelp';
+    }
+    if (await canLaunch(url)) {
+      inputData();
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  inputData() {
+    List<dynamic> listResponden;
+    if (widget.requestDarahModel.listResponden != null) {
+      listResponden =
+          new List<dynamic>.from(widget.requestDarahModel.listResponden);
+    } else {
+      listResponden = new List<dynamic>();
+    }
+    listResponden.add({"phoneNumber": "$phoneNumber"});
+    widget.requestDarahModel.listResponden = listResponden;
+    print(widget.requestDarahModel.toJson());
+    mainReference
+        .child("requestDarah")
+        .child(widget.requestDarahModel.id)
+        .set(widget.requestDarahModel.toJson()).then((onValue){print("Successful");}).catchError((onError){print(onError);});
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: Scaffold(
+    this.mContext = context;
+    return MaterialApp(
+        home: Scaffold(
       body: Column(
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[mapsLocation(), content()],

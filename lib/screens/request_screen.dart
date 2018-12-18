@@ -29,10 +29,11 @@ class _RequestScreenState extends State<RequestScreen> {
               listRequestDarah = new List();
               Map<dynamic, dynamic> map = snapshot.data.snapshot.value;
               List<dynamic> list = map.values.toList();
-              for (var item in list) {
-                listRequestDarah.add(new RequestDarahModel.fromSnapshot(item));
+              List<dynamic> list2 = map.keys.toList();
+              for (var i = 0; i < list.length; i++) {
+                listRequestDarah
+                    .add(new RequestDarahModel.fromData(list[i], list2[i]));
               }
-              // print(json.encode( listRequestDarah));
               return content();
             } else {
               print("Kosong");
@@ -52,7 +53,8 @@ class _RequestScreenState extends State<RequestScreen> {
               child: ListTile(
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => RequestDarahDetailScreen(listRequestDarah[index])));
+                      builder: (context) =>
+                          RequestDarahDetailScreen(listRequestDarah[index])));
                 },
                 leading: CircleAvatar(
                   backgroundColor: Color.fromRGBO(206, 20, 20, 1.0),

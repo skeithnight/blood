@@ -33,6 +33,7 @@ dependencies:
   flutter_map:
   permission_handler: 
   google_places_picker: ^0.0.9 
+  url_launcher: ^4.0.2
   
   
 
