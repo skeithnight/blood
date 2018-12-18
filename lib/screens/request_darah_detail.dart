@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:blood/screens/widgets/common_divided_widget.dart';
 import 'package:blood/data.dart' as data;
@@ -13,14 +14,16 @@ import 'main_screen.dart';
 class RequestDarahDetailScreen extends StatelessWidget {
   final RequestDarahModel requestDarahModel;
   RequestDarahDetailScreen(this.requestDarahModel);
-  List<String> listDarah = ["A+", "A-", "B+", "B-","0+", "0-", "AB+", "AB-"];
-  
+  List<String> listDarah = ["A+", "A-", "B+", "B-", "0+", "0-", "AB+", "AB-"];
+  BuildContext mContext;
+
   Widget mapsLocation() => Container(
         width: double.infinity,
         height: 300.0,
         child: new FlutterMap(
           options: new MapOptions(
-            center: new LatLng(requestDarahModel.latitude, requestDarahModel.longitude),
+            center: new LatLng(
+                requestDarahModel.latitude, requestDarahModel.longitude),
             zoom: 13.0,
           ),
           layers: [
@@ -38,7 +41,8 @@ class RequestDarahDetailScreen extends StatelessWidget {
                 new Marker(
                   width: 80.0,
                   height: 80.0,
-                  point: new LatLng(requestDarahModel.latitude, requestDarahModel.longitude),
+                  point: new LatLng(
+                      requestDarahModel.latitude, requestDarahModel.longitude),
                   builder: (ctx) => new Container(
                         child: Icon(Icons.place),
                       ),
@@ -68,12 +72,65 @@ class RequestDarahDetailScreen extends StatelessWidget {
                 SizedBox(
                   height: 5.0,
                 ),
-                Text("Name", style: TextStyle( fontWeight: FontWeight.bold),),
-                Text( requestDarahModel.nama),
-                Text("Phone Number", style: TextStyle( fontWeight: FontWeight.bold),),
-                Text( requestDarahModel.noTelp),
-                Text("Address", style: TextStyle( fontWeight: FontWeight.bold),),
-                Text( requestDarahModel.address),
+                Text(
+                  "Name",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(requestDarahModel.nama),
+                // Text("Phone Number", style: TextStyle( fontWeight: FontWeight.bold),),
+                // Text( requestDarahModel.noTelp),
+                Text(
+                  "Address",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(requestDarahModel.address),
+                Center(
+                  child: Container(
+                    width: 100.0,
+                    child: Row(
+                      children: <Widget>[
+                        Container(
+                          child: Column(
+                            children: <Widget>[
+                              IconButton(
+                                icon: Icon(Icons.call),
+                                onPressed: () {
+                                  tampilDialog(
+                                      "Information",
+                                      "Kapan terakhir kali anda donor darah ?",
+                                      "telp");
+                                },
+                              ),
+                              Text(
+                                "Call",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          child: Column(
+                            children: <Widget>[
+                              IconButton(
+                                icon: Icon(Icons.message),
+                                onPressed: () {
+                                  tampilDialog(
+                                      "Information",
+                                      "Kapan terakhir kali anda donor darah ?",
+                                      "sms");
+                                },
+                              ),
+                              Text(
+                                "SMS",
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
               ],
             ),
           )));
@@ -97,7 +154,9 @@ class RequestDarahDetailScreen extends StatelessWidget {
                 SizedBox(
                   height: 5.0,
                 ),
-                Text(requestDarahModel.description,)
+                Text(
+                  requestDarahModel.description,
+                )
               ],
             ),
           )));
@@ -126,14 +185,15 @@ class RequestDarahDetailScreen extends StatelessWidget {
                       .map((pc) => Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: ChoiceChip(
-                                selectedColor: Colors.yellow,
-                                label: Text(
-                                  pc,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              selectedColor: Colors.yellow,
+                              label: Text(
+                                pc,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                selected: requestDarahModel.tipeDarah == pc,),
+                              ),
+                              selected: requestDarahModel.tipeDarah == pc,
+                            ),
                           ))
                       .toList(),
                 ),
@@ -160,10 +220,53 @@ class RequestDarahDetailScreen extends StatelessWidget {
           ),
         ],
       );
-  
+
+  void tampilDialog(String tittle, String message, String level) {
+    showDialog(
+      context: mContext,
+      builder: (BuildContext mContext) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text(tittle),
+          content: new Text(message),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("< 8 Minggu"),
+              onPressed: () {
+                Navigator.of(mContext).pop();
+              },
+            ),
+            new FlatButton(
+              child: new Text("> 8 Minggu"),
+              onPressed: () {_launchURL(level);},
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  _launchURL(String level) async {
+    final String notelp = requestDarahModel.noTelp;
+    var url;
+    if (level == "telp") {
+      url = 'tel:$notelp';
+    } else {
+      url = 'sms:$notelp';
+    }
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: Scaffold(
+    this.mContext = context;
+    return MaterialApp(
+        home: Scaffold(
       body: Column(
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[mapsLocation(), content()],
