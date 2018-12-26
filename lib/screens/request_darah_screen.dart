@@ -316,20 +316,16 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
   }
 
   void pushNotif() {
-    // var fcmToken = "fWf8dBG4SIw:APA91bFpHMG8TSowERG-eHSRROg6tZujuBZj-1rcsX6q5tN35hhKHJgZjVjGaH_AK29g_9JXZV_qxzcpU3pGlpbq9hcVL2W5B9BTZFplqMLDo55MnOMaHyb1tlJx9o7cchVaLlwqpHol";
     var fcmToken = "/topics/requestDarah";
     String aa = requestDarahModel.address;
     String bb = json.encode(requestDarahModel);
-    // print(requestDarahModel.toString());
     var data1 =
         '{"to": "$fcmToken","notification": {"title": "Donorkan darah anda","body": "$aa"},"priority": "high", "data": {"click_action": "FLUTTER_NOTIFICATION_CLICK", "body":$bb}}';
-    // '{"notification": {"body": "this is a body","title": "this is a title"}, "priority": "high", "data": {"click_action": "FLUTTER_NOTIFICATION_CLICK", "id": "1", "status": "done"}, "to": "$fcmToken"}';
     var url = "https://fcm.googleapis.com/fcm/send";
     http.post(url, body: data1, headers: {
       "Authorization": "key=${data.fcmServerKey}",
       "Content-Type": "application/json"
     }).then((value) {
-      print('cc');
       _showDialog();
     });
   }
