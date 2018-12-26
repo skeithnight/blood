@@ -21,11 +21,11 @@ class RequestDarahDetailScreen extends StatefulWidget {
 
 class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
   BuildContext mContext;
-  List<String> listDarah = ["A+", "A-", "B+", "B-", "0+", "0-", "AB+", "AB-"];
+  List<String> listDarah = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
   // Firebase messaging
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final mainReference = FirebaseDatabase.instance.reference();
-  String phoneNumber = "";
+  String phoneNumber, uuid = "";
 
   @override
   void initState() {
@@ -37,7 +37,9 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
     FirebaseUser user = await _auth.currentUser();
     setState(() {
       this.phoneNumber = user.phoneNumber;
+      this.uuid = user.uid;
     });
+    print(uuid);
   }
 
   Widget mapsLocation() => Container(
@@ -145,6 +147,7 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
 
   Widget descriptionCard() => Container(
       width: double.infinity,
+      height: 100.0,
       child: Card(
           elevation: 10.0,
           child: Padding(
@@ -162,9 +165,7 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
                 SizedBox(
                   height: 5.0,
                 ),
-                Text(
-                  widget.requestDarahModel.description,
-                )
+                Text(widget.requestDarahModel.description)
               ],
             ),
           )));
@@ -235,6 +236,35 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
           ],
         ),
       ));
+  Widget listRespondenCard() => Container(
+      width: double.infinity,
+      height: 300.0,
+      child: Card(
+          elevation: 10.0,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  "List Responden",
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                SizedBox(
+                  height: 5.0,
+                ),
+                Flexible(
+                  child: widget.requestDarahModel.listResponden == null
+                      ? Center(child: Text("No respondent yet"))
+                      : listRespondenController(),
+                ),
+              ],
+            ),
+          )));
+
   Widget content() => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -254,11 +284,13 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
             height: 5.0,
           ),
           listDarahCard(),
-          // CommonDivider(),
-          // SizedBox(
-          //   height: 5.0,
-          // ),
-          // respondenCard(),
+          CommonDivider(),
+          SizedBox(
+            height: 5.0,
+          ),
+          widget.requestDarahModel.requester == uuid
+              ? listRespondenCard()
+              : Container(),
           CommonDivider(),
           SizedBox(
             height: 20.0,
@@ -280,6 +312,8 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
               child: new Text("<8 Minggu"),
               onPressed: () {
                 Navigator.of(context).pop();
+                tampilDialogInformation("Information",
+                    "You need to rest your condition until 8 week");
               },
             ),
             new FlatButton(
@@ -294,6 +328,33 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
     );
   }
 
+  void tampilDialogInformation(String tittle, String message) {
+    showDialog(
+      context: mContext,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text(tittle),
+          content: new Text(message),
+        );
+      },
+    );
+  }
+
+  Widget listRespondenController() {
+    List<dynamic> listReponden =
+        widget.requestDarahModel.listResponden.toSet().toList();
+    return ListView.builder(
+      itemCount: listReponden.length,
+      itemBuilder: (BuildContext context, int index) => Card(
+          elevation: 5.0,
+          child: Container(
+            padding: EdgeInsets.all(5.0),
+            child: Text(listReponden[index]['phoneNumber']),
+          )),
+    );
+  }
+
   _launchURL(String level) async {
     var url;
     String notelp = widget.requestDarahModel.noTelp;
@@ -303,11 +364,24 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
       url = 'sms:$notelp';
     }
     if (await canLaunch(url)) {
-      inputData();
+      if (!isDuplicateResponden()) {
+        inputData();
+      }
       await launch(url);
     } else {
       throw 'Could not launch $url';
     }
+  }
+
+  bool isDuplicateResponden() {
+    if (widget.requestDarahModel.listResponden != null) {
+      for (var item in widget.requestDarahModel.listResponden) {
+        if (item['phoneNumber'] == phoneNumber) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   inputData() {
@@ -324,7 +398,12 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
     mainReference
         .child("requestDarah")
         .child(widget.requestDarahModel.id)
-        .set(widget.requestDarahModel.toJson()).then((onValue){print("Successful");}).catchError((onError){print(onError);});
+        .set(widget.requestDarahModel.toJson())
+        .then((onValue) {
+      print("Successful");
+    }).catchError((onError) {
+      print(onError);
+    });
   }
 
   @override
@@ -332,9 +411,14 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
     this.mContext = context;
     return MaterialApp(
         home: Scaffold(
-      body: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[mapsLocation(), content()],
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            mapsLocation(),
+            content(),
+          ],
+        ),
       ),
     ));
   }

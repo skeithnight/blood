@@ -2,6 +2,7 @@ import 'package:firebase_database/firebase_database.dart';
 
 class RequestDarahModel {
   String id;
+  String requester;
   String description;
   String nama;
   String noTelp;
@@ -22,6 +23,7 @@ class RequestDarahModel {
 
   RequestDarahModel.fromSnapshot(Map<dynamic, dynamic> snapshot)
       : description = snapshot["description"],
+        requester = snapshot["requester"],
         nama = snapshot["nama"],
         noTelp = snapshot["noTelp"],
         address = snapshot["address"],
@@ -32,6 +34,7 @@ class RequestDarahModel {
   RequestDarahModel.fromData(Map<dynamic, dynamic> snapshot,String id)
       : this.id = id,
         description = snapshot["description"],
+        requester = snapshot["requester"],
         nama = snapshot["nama"],
         noTelp = snapshot["noTelp"],
         address = snapshot["address"],
@@ -41,6 +44,7 @@ class RequestDarahModel {
         listResponden = snapshot["listResponden"];
 
   Map<String, dynamic> toJson() => {
+        'requester': requester,
         'description': description,
         'nama': nama,
         'noTelp': noTelp,

@@ -36,11 +36,15 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
   void initState() {
     super.initState();
     _initPlatformState();
+    getUser();
   }
 
   void getUser() async {
     FirebaseUser user = await _auth.currentUser();
-    print(user.phoneNumber);
+    setState(() {
+      this.requestDarahModel.requester = user.uid;
+    });
+    print(requestDarahModel.toJson());
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -294,6 +298,7 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
                       isLoadinginput = true;
                     });
                     try {
+                      // print( requestDarahModel.toJson());
                       inputData();
                     } catch (e) {
                       print(e.toString());
