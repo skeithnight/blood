@@ -11,6 +11,7 @@ class MainScreen extends StatelessWidget {
   static String tag = 'main-page';
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = new GoogleSignIn();
+  BuildContext mcontext;
 
   Future<Null> _signOut() async {
     await FirebaseAuth.instance.signOut();
@@ -42,22 +43,35 @@ class MainScreen extends StatelessWidget {
               text: "Request"),
         ],
       );
-  Widget appBar() => new AppBar( title: Text("Blood Stream"),
+  Widget appBar() => new AppBar(
+        title: Text("Blood Stream"),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.exit_to_app,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              _signOut();
-            },
-          )
+          PopupMenuButton(
+            itemBuilder: (_) => <PopupMenuItem<String>>[
+                  new PopupMenuItem(
+                    child: ListTile(
+                      onTap: () {
+                        Navigator.of(mcontext).push(MaterialPageRoute(
+                            builder: (context) => profile.ProfileScreen("Profile")));
+                      },
+                      leading: Icon(Icons.person),
+                      title: Text("Profile"),
+                    ),
+                  ),
+                  new PopupMenuItem(
+                      child: ListTile(
+                    onTap: () => _signOut(),
+                    leading: Icon(Icons.exit_to_app),
+                    title: Text("Logout"),
+                  ))
+                ],
+          ),
         ],
       );
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    mcontext = context;
     return new MaterialApp(
       routes: routes,
       color: Colors.yellow,

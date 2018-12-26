@@ -1,29 +1,56 @@
 import 'package:flutter/material.dart';
-import './login_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
-  Widget fotoProfile() => Center(
-        child: new Container(
-          margin: EdgeInsets.all(10.0),
-          width: 100.0,
-          height: 100.0,
-          decoration: new BoxDecoration(
-            shape: BoxShape.circle,
-            image: new DecorationImage(
-              fit: BoxFit.fill,
-              image: new NetworkImage(
-                  "https://www.caldwellsecurities.com/images/default-source/default-album/john-davitskycc68baba6d596b9a885bff0000bcd1e6.jpg?sfvrsn=5e31d1c6_0"),
-            ),
-          ),
-        ),
-      );
-  Widget golDarah() => Container(
+import './login_screen.dart';
+import 'package:blood/models/user_model.dart';
+import 'package:blood/screens/widgets/common_divided_widget.dart';
+import 'package:blood/main.dart';
+
+import 'package:blood/data.dart' as data;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
+
+class ProfileScreen extends StatefulWidget {
+  String level;
+  ProfileScreen(this.level);
+  _ProfileScreenState createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  UserModel userModel = new UserModel();
+  String uid;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final mainReference = FirebaseDatabase.instance.reference();
+
+  final nameController = TextEditingController();
+  final addressController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    getUser();
+  }
+
+  void getUser() async {
+    FirebaseUser user = await _auth.currentUser();
+    setState(() {
+      this.uid = user.uid;
+      if (widget.level == "Register") {
+        this.userModel.uid = user.uid;
+        this.userModel.phoneNumber = user.phoneNumber;
+      }
+    });
+
+    print(uid);
+  }
+
+  // Profile
+  Widget golDarah(String goldar) => Container(
       padding: EdgeInsets.all(5.0),
       margin: EdgeInsets.all(10.0),
       child: Column(
         children: <Widget>[
           Text(
-            "A+",
+            goldar,
             style: TextStyle(
               color: Colors.red,
               fontSize: 50.0,
@@ -37,51 +64,148 @@ class ProfileScreen extends StatelessWidget {
           color: Colors.white,
           shape: BoxShape.rectangle,
           borderRadius: BorderRadius.circular(8.0)));
-  Widget editButton() => new Expanded(
-        flex: 1,
-        child: Container(
-          margin: EdgeInsets.all(10.0),
-          child: Align(
-            alignment: FractionalOffset.bottomCenter,
-            child: SizedBox(
-              width: double.infinity,
-              height: 50.0,
-              child: new RaisedButton(
-                color: Colors.green,
-                child: Text(
-                  "Edit",
-                  style: TextStyle(color: Colors.white),
+  Future<UserModel> fecthData() async {
+    FirebaseUser user = await _auth.currentUser();
+    DataSnapshot snapshot =
+        await mainReference.child("user").child(user.uid).once();
+    UserModel model = UserModel.fromSnapshot(snapshot.value);
+    if(userModel.name == null){
+      this.userModel = model;
+    }
+    return model;
+  }
+
+  Widget profileContent() => new FutureBuilder<UserModel>(
+        future: fecthData(),
+        builder: (BuildContext context, snapshot) {
+          if (snapshot.hasData) {
+            nameController.text = userModel.name;
+            addressController.text = userModel.address;
+            return new Column(
+              children: <Widget>[
+                golDarah(userModel.bloodType),
+                CommonDivider(),
+                SizedBox(
+                  height: 5.0,
                 ),
-                onPressed: () {},
-              ),
+                identityForm(),
+                CommonDivider(),
+                SizedBox(
+                  height: 5.0,
+                ),
+                listDarahChoice(),
+              ],
+            );
+          } else {
+            return new Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
+      );
+  // Register
+  Widget registerContent() => new Column(
+        children: <Widget>[
+          identityForm(),
+          CommonDivider(),
+          SizedBox(
+            height: 5.0,
+          ),
+          listDarahChoice(),
+        ],
+      );
+  // Widget
+  Widget listDarahChoice() => new Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            "Blood type",
+            style: TextStyle(
+              fontSize: 20.0,
+              fontWeight: FontWeight.w700,
             ),
           ),
-        ),
+          SizedBox(
+            height: 5.0,
+          ),
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            children: data.listDarah
+                .map((pc) => Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ChoiceChip(
+                        selectedColor: Colors.yellow,
+                        label: Text(
+                          pc,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        selected: userModel.bloodType == pc,
+                        onSelected: (selected) {
+                          setState(() {
+                            userModel.bloodType = selected ? pc : null;
+                          });
+                        },
+                      ),
+                    ))
+                .toList(),
+          ),
+        ],
       );
-  Widget profileContent() => Container(
-        width: double.infinity,
-        height: 200.0,
+  Widget identityForm() => new Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            "Identity",
+            style: TextStyle(
+              fontSize: 20.0,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          SizedBox(
+            height: 5.0,
+          ),
+          TextField(
+            controller: nameController,
+            keyboardType: TextInputType.text,
+            style: TextStyle(color: Colors.black),
+            onChanged: (out) => userModel.name = out,
+            decoration: InputDecoration(
+              labelStyle: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+              labelText: "Name",
+            ),
+          ),
+          TextField(
+            controller: addressController,
+            decoration: InputDecoration(
+              labelStyle: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+              labelText: "Address",
+            ),
+            onChanged: (out) => userModel.address = out,
+            keyboardType: TextInputType.multiline,
+            maxLines: 3,
+          )
+        ],
+      );
+
+  // Content
+
+  Widget content() => Container(
         margin: EdgeInsets.all(10.0),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                child: golDarah(),
-              ),
-              flex: 1,
-            ),
-            Expanded(
-              child: Text("data"),
-              flex: 1,
-            ),
-            editButton()
+            widget.level == "Register" ? registerContent() : profileContent(),
+            processButton()
           ],
         ),
       );
-
-  Widget logout(context) => new Expanded(
+  Widget processButton() => new Expanded(
         flex: 1,
         child: Container(
           margin: EdgeInsets.all(10.0),
@@ -91,129 +215,105 @@ class ProfileScreen extends StatelessWidget {
               width: double.infinity,
               height: 50.0,
               child: new RaisedButton(
-                color: Colors.pink,
+                color: widget.level == "Register" ? Colors.blue : Colors.green,
                 child: Text(
-                  "Logout",
+                  widget.level == "Register" ? "Register" : "Edit",
                   style: TextStyle(color: Colors.white),
                 ),
-                onPressed: () {
+                onPressed: widget.level == "Register"
+                    ? () => registerData()
+                    : () => editData(),
+              ),
+            ),
+          ),
+        ),
+      );
+  void tampilDialog(String tittle, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text(tittle),
+          content: new Text(message),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Close"),
+              onPressed: () {
+                if (tittle == "Alert") {
+                  Navigator.of(context).pop();
+                } else {
                   Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()),
-                  );
-                },
-              ),
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => MyApp()));
+                }
+              },
             ),
-          ),
-        ),
-      );
-  Widget profile() => new Expanded(
-        flex: 8,
-        child: Center(
-          child: Container(
-            height: 500.0,
-            width: double.infinity,
-            child: Center(
-              child: Stack(
-                children: <Widget>[
-                  Column(
-                    children: <Widget>[
-                      Container(height: 50.0),
-                      DecoratedBox(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20.0),
-                          color: Colors.lightBlue,
-                          boxShadow: <BoxShadow>[
-                            BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 10.0,
-                                offset: Offset(0.0, 10.0))
-                          ],
-                        ),
-                        child: Container(
-                          padding: EdgeInsets.fromLTRB(30.0, 80.0, 30.0, 0.0),
-                          width: double.infinity,
-                          height: 400.0,
-                          child: profileContent(),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: <Widget>[
-                      Center(
-                        child: new Container(
-                          width: 100.0,
-                          height: 100.0,
-                          decoration: new BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: new DecorationImage(
-                              fit: BoxFit.fill,
-                              image: new NetworkImage(
-                                  "https://www.caldwellsecurities.com/images/default-source/default-album/john-davitskycc68baba6d596b9a885bff0000bcd1e6.jpg?sfvrsn=5e31d1c6_0"),
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  )
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
+          ],
+        );
+      },
+    );
+  }
 
-  Widget content(context) => Column(
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[profile(), logout(context)],
-      );
+  bool validateForm() {
+    if (userModel.uid == null ||
+        userModel.name == null ||
+        userModel.phoneNumber == null ||
+        userModel.bloodType == null ||
+        userModel.address == null) {
+      return false;
+    }
+    return true;
+  }
+
+  void registerData() {
+    if (validateForm()) {
+      mainReference
+          .child("user")
+          .child(userModel.uid)
+          .set(userModel.toJson())
+          .then((value) {
+        tampilDialog("Success", "Success Input Data");
+      }).catchError((onError) => tampilDialog("Alert", onError));
+    } else {
+      tampilDialog("Alert", "Sorry data is incomplete");
+    }
+  }
+
+  void editData() {
+    // print(userModel.toJson());
+    if (validateForm()) {
+      mainReference
+          .child("user")
+          .child(userModel.uid)
+          .set(userModel.toJson())
+          .then((value) {
+        tampilDialog("Success", "Success Input Data");
+      }).catchError((onError) => tampilDialog("Alert", onError));
+    } else {
+      tampilDialog("Alert", "Sorry data is incomplete");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return new Scaffold(
-      appBar: new AppBar(
-        title: new Text("Profile"),
-      ),
-      body: content(context),
-    );
+        appBar: new AppBar(
+          title: new Text(
+            widget.level,
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+        body: new Center(
+            child: Container(
+                margin: EdgeInsets.all(10.0),
+                width: double.infinity,
+                child: Card(
+                  child: content(),
+                )),
+          ),);
   }
 }
-
-// child: Container(
-//             child: Stack(children: <Widget>[
-//               Column(
-//                 children: <Widget>[
-//                   DecoratedBox(
-//                     decoration: BoxDecoration(
-//                       borderRadius: BorderRadius.circular(20.0),
-//                       color: Colors.white,
-//                     ),
-//                     child: Container(
-//                       width: 300.0,
-//                       height: 400.0,
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//               Column(
-//                 children: <Widget>[
-//                   Center(
-//                     child: new Container(
-//                       width: 100.0,
-//                       height: 100.0,
-//                       decoration: new BoxDecoration(
-//                         shape: BoxShape.circle,
-//                         image: new DecorationImage(
-//                           fit: BoxFit.fill,
-//                           image: new NetworkImage(
-//                               "https://www.caldwellsecurities.com/images/default-source/default-album/john-davitskycc68baba6d596b9a885bff0000bcd1e6.jpg?sfvrsn=5e31d1c6_0"),
-//                         ),
-//                       ),
-//                     ),
-//                   )
-//                 ],
-//               )
-//             ]),
-//           ),

@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 
+import 'package:http/http.dart' as http;
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_database/firebase_database.dart';
+
 import 'package:blood/screens/login_screen.dart';
 import 'package:blood/screens/main_screen.dart';
 import 'package:blood/screens/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:http/http.dart' as http;
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:blood/screens/request_darah_detail.dart';
 import 'package:blood/models/request_darah_model.dart';
-import 'package:blood/screens/request_screen.dart';
+import 'screens/profile_screen.dart';
 
 void main() => runApp(new MaterialApp(
       title: "Blood",
@@ -19,6 +21,7 @@ void main() => runApp(new MaterialApp(
     ));
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
+final FirebaseDatabase _database = FirebaseDatabase.instance;
 
 class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
@@ -33,11 +36,24 @@ class _MyAppState extends State<MyApp> {
     // TODO: implement initState
     super.initState();
     firebaseCloudMessaging_Listeners();
+    checkRegister();
     // _navigateToItemDetail();
   }
 
   Future<FirebaseUser> getUser() async {
     return await _auth.currentUser();
+  }
+
+  void checkRegister() async {
+    var user = await _auth.currentUser();
+    var response =
+        await _database.reference().child("user").child(user.uid).once();
+    if (response.value == null) {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (BuildContext context) => ProfileScreen("Register")));
+    }
   }
 
   void firebaseCloudMessaging_Listeners() {
@@ -57,17 +73,21 @@ class _MyAppState extends State<MyApp> {
       },
       onLaunch: (Map<String, dynamic> message) async {
         print('on launch $message');
-        _navigateToItemDetail(context,message);
+        _navigateToItemDetail(context, message);
       },
     );
   }
 
-  _navigateToItemDetail(BuildContext mcontext,Map<String,dynamic> message) {
+  _navigateToItemDetail(BuildContext mcontext, Map<String, dynamic> message) {
     // SplashScreen();
-    RequestDarahModel requestDarahModel = new RequestDarahModel.fromSnapshot(json.decode(message['body']));
-    Navigator.push(mcontext,
-        MaterialPageRoute(builder: (BuildContext context) => RequestDarahDetailScreen(requestDarahModel)));
-        // MaterialPageRoute(builder: (BuildContext context) => SplashScreen()));
+    RequestDarahModel requestDarahModel =
+        new RequestDarahModel.fromSnapshot(json.decode(message['body']));
+    Navigator.push(
+        mcontext,
+        MaterialPageRoute(
+            builder: (BuildContext context) =>
+                RequestDarahDetailScreen(requestDarahModel)));
+    // MaterialPageRoute(builder: (BuildContext context) => SplashScreen()));
   }
 
   void _onLoading() {
@@ -106,6 +126,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return _handleCurrentScreen(context);    
+    return _handleCurrentScreen(context);
   }
 }

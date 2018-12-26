@@ -23,40 +23,6 @@ class _HomeScreenState extends State<HomeScreen> {
   List<StokDarah> listStokDarah = new List();
   List<EventModel> listEvent = new List();
 
-  Widget _getData(context) {
-    return FutureBuilder();
-    // return StreamBuilder<Event>(
-    //     stream: FirebaseDatabase.instance.reference().onValue,
-    //     builder: (BuildContext context, snapshot) {
-    //       if (snapshot.connectionState == ConnectionState.waiting) {
-    //         // _onLoading(context);
-    //         // print("FirebaseDatabase: Waiting......");
-    //         return new Center(
-    //           child: Text("Waiting"),
-    //         );
-    //       } else {
-    //         if (snapshot.hasData) {
-    //           listEvent = new List();
-    //           listStokDarah = new List();
-    //           var map = snapshot.data.snapshot.value;
-    //           List<dynamic> mapEvent = map["event"];
-    //           List<dynamic> mapStokDarah = map["stokDarah"];
-    //           for (var item in mapEvent) {
-    //             listEvent.add(new EventModel.fromSnapshot(item));
-    //           }
-    //           for (var item in mapStokDarah) {
-    //             listStokDarah.add(new StokDarah.fromSnapshot(item));
-    //           }
-    //           return content(context);
-    //         }
-    //         print("Kosong");
-    //         return new Center(
-    //           child: Text("kosong"),
-    //         );
-    //       }
-    //     });
-  }
-
 // Stok Darah
   Future<StokDarah> fetchGetStokDarah() async {
     final response =

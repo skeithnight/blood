@@ -319,7 +319,7 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
             new FlatButton(
               child: new Text(">8 Minggu"),
               onPressed: () {
-                _launchURL(level);
+                _launchURL(level, widget.requestDarahModel.noTelp);
               },
             ),
           ],
@@ -347,17 +347,21 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
     return ListView.builder(
       itemCount: listReponden.length,
       itemBuilder: (BuildContext context, int index) => Card(
-          elevation: 5.0,
-          child: Container(
-            padding: EdgeInsets.all(5.0),
-            child: Text(listReponden[index]['phoneNumber']),
-          )),
+            elevation: 5.0,
+            child: InkWell(
+                onTap: () =>
+                    _launchURL("call", listReponden[index]['phoneNumber']),
+                child: ListTile(
+                  leading: Icon(Icons.call),
+                  title: Text(listReponden[index]['phoneNumber']),
+                )),
+          ),
     );
   }
 
-  _launchURL(String level) async {
+  _launchURL(String level, String notelp) async {
     var url;
-    String notelp = widget.requestDarahModel.noTelp;
+    print(notelp);
     if (level == "call") {
       url = 'tel:$notelp';
     } else {

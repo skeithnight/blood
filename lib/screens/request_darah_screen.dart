@@ -24,8 +24,6 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
   Position _position;
   bool isLoadinginput = false;
 
-  // String _value = "A+";
-  List<String> listDarah = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"];
 
   // Firebase messaging
   FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
@@ -44,7 +42,6 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
     setState(() {
       this.requestDarahModel.requester = user.uid;
     });
-    print(requestDarahModel.toJson());
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -164,7 +161,7 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
                 ),
                 Wrap(
                   alignment: WrapAlignment.spaceBetween,
-                  children: listDarah
+                  children: data.listDarah
                       .map((pc) => Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: ChoiceChip(
