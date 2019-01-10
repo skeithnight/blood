@@ -4,6 +4,9 @@ class UserModel{
   String phoneNumber;
   String address;
   String bloodType;
+  String fcmToken;
+  double lat;
+  double lon;
 
   UserModel();
 
@@ -12,7 +15,10 @@ class UserModel{
         uid = snapshot["uid"],
         phoneNumber = snapshot["phoneNumber"],
         address = snapshot["address"],
-        bloodType = snapshot["bloodType"];
+        bloodType = snapshot["bloodType"],
+        fcmToken = snapshot["fcmToken"],
+        lat = snapshot["lat"],
+        lon = snapshot["lon"];
 
   toJson() {
     return {
@@ -21,6 +27,9 @@ class UserModel{
       "phoneNumber": phoneNumber,
       "address": address,
       "bloodType": bloodType,
+      "fcmToken": fcmToken,
+      "lat": lat,
+      "lon": lon,
     };
   }
 }

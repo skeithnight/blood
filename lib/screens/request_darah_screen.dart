@@ -24,7 +24,6 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
   Position _position;
   bool isLoadinginput = false;
 
-
   // Firebase messaging
   FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -190,23 +189,6 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
     return Text(requestDarahModel.latitude.toString() +
         " : " +
         requestDarahModel.longitude.toString());
-    // if (requestDarahModel.latitude == null) {
-    //   return RaisedButton(
-    //     child: Text("Location"),
-    //     color: Colors.blue,
-    //     textColor: Colors.white,
-    //     elevation: 7.0,
-    //     onPressed: () {
-    //       print(requestDarahModel.latitude);
-    //       requestDarahModel.latitude = -6.898356;
-    //       requestDarahModel.longitude = 107.621707;
-    //     },
-    //   );
-    // } else {
-    //   return Text(requestDarahModel.latitude.toString() +
-    //       " , " +
-    //       requestDarahModel.longitude.toString());
-    // }
   }
 
   Widget locationCard() => Container(
@@ -306,28 +288,30 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
       );
 
   inputData() {
+    // read the index key
+    String idRequest = mainReference.child("requestDarah").push().key;
+    // print(mGroupId);
     mainReference
         .child("requestDarah")
-        .push()
+        .child(idRequest)
         .set(requestDarahModel.toJson())
         .then((value) {
-      pushNotif();
-    }).catchError((onError) => _showDialog());
+      pushNotif(idRequest);
+    }).catchError((onError) => tampilDialog("Error", onError.toString()));
   }
 
-  void pushNotif() {
-    var fcmToken = "/topics/requestDarah";
-    String aa = requestDarahModel.address;
-    String bb = json.encode(requestDarahModel);
-    var data1 =
-        '{"to": "$fcmToken","notification": {"title": "Donorkan darah anda","body": "$aa"},"priority": "high", "data": {"click_action": "FLUTTER_NOTIFICATION_CLICK", "body":$bb}}';
-    var url = "https://fcm.googleapis.com/fcm/send";
-    http.post(url, body: data1, headers: {
-      "Authorization": "key=${data.fcmServerKey}",
-      "Content-Type": "application/json"
-    }).then((value) {
+  void pushNotif(String idRequest) {
+    String body = requestDarahModel.address;
+    String latitude = requestDarahModel.latitude.toString();
+    String longitude = requestDarahModel.longitude.toString();
+    String goldar = requestDarahModel.tipeDarah.toUpperCase();
+
+    var url = data.cloudFunction +
+        "sendnotif?title=Donorkan darah anda&body=$body&lat=$latitude&lon=$longitude&radius=10&idRequest=$idRequest&golonganDarah=$goldar";
+        // print(url);
+    http.get(url).then((value) {
       _showDialog();
-    });
+    }).catchError((onError) => tampilDialog("Error", onError.toString()));
   }
 
   void tampilDialog(String tittle, String message) {

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:geolocator/geolocator.dart';
 
 import './login_screen.dart';
 import 'package:blood/models/user_model.dart';
@@ -18,6 +20,8 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   UserModel userModel = new UserModel();
   String uid;
+  // Firebase messaging
+  FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final mainReference = FirebaseDatabase.instance.reference();
 
@@ -28,11 +32,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     getUser();
+    _initPlatformState();
   }
 
   void getUser() async {
     FirebaseUser user = await _auth.currentUser();
+    String token = await _firebaseMessaging.getToken();
     setState(() {
+      userModel.fcmToken = token;
       this.uid = user.uid;
       if (widget.level == "Register") {
         this.userModel.uid = user.uid;
@@ -41,6 +48,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
 
     print(uid);
+  }
+  // Platform messages are asynchronous, so we initialize in an async method.
+  void _initPlatformState() async {
+    Position position;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      // Geolocator geolocator = Geolocator()..forceAndroidLocationManager = true;
+      position = await Geolocator()
+          .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      print("position");
+    } on Exception {
+      print("object");
+      position = null;
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      userModel.lat = position.latitude;
+      userModel.lon = position.longitude;
+    });
   }
 
   // Profile
