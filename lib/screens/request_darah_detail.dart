@@ -88,7 +88,7 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  "Identity",
+                  "Identitas",
                   style: TextStyle(
                     fontSize: 20.0,
                     fontWeight: FontWeight.w700,
@@ -98,12 +98,12 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
                   height: 5.0,
                 ),
                 Text(
-                  "Name",
+                  "Nama",
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Text(widget.requestDarahModel.nama),
                 Text(
-                  "Address",
+                  "Alamat",
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Text(widget.requestDarahModel.address),
@@ -156,7 +156,7 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  "Description",
+                  "Deskripsi",
                   style: TextStyle(
                     fontSize: 20.0,
                     fontWeight: FontWeight.w700,
@@ -179,7 +179,7 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  "Blood type",
+                  "Tipe Darah",
                   style: TextStyle(
                     fontSize: 20.0,
                     fontWeight: FontWeight.w700,
@@ -247,7 +247,7 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  "List Responden",
+                  "Daftar Responden",
                   style: TextStyle(
                     fontSize: 20.0,
                     fontWeight: FontWeight.w700,
@@ -313,7 +313,7 @@ class _RequestDarahDetailScreenState extends State<RequestDarahDetailScreen> {
               onPressed: () {
                 Navigator.of(context).pop();
                 tampilDialogInformation("Information",
-                    "You need to rest your condition until 8 week");
+                    "Anda butuh mengistirahatkan kondisi anda sampai 8 minggu ke depan");
               },
             ),
             new FlatButton(

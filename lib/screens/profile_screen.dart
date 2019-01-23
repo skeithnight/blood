@@ -150,7 +150,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            "Blood type",
+            "Tipe Darah",
             style: TextStyle(
               fontSize: 20.0,
               fontWeight: FontWeight.w700,
@@ -188,7 +188,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            "Identity",
+            "Profil",
             style: TextStyle(
               fontSize: 20.0,
               fontWeight: FontWeight.w700,
@@ -206,7 +206,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               labelStyle: TextStyle(
                 fontWeight: FontWeight.bold,
               ),
-              labelText: "Name",
+              labelText: "Nama",
             ),
           ),
           TextField(
@@ -215,7 +215,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               labelStyle: TextStyle(
                 fontWeight: FontWeight.bold,
               ),
-              labelText: "Address",
+              labelText: "Alamat",
             ),
             onChanged: (out) => userModel.address = out,
             keyboardType: TextInputType.multiline,
@@ -306,10 +306,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           .child(userModel.uid)
           .set(userModel.toJson())
           .then((value) {
-        tampilDialog("Success", "Success Input Data");
+        tampilDialog("Success", "Sukses menyimpan data");
       }).catchError((onError) => tampilDialog("Alert", onError));
     } else {
-      tampilDialog("Alert", "Sorry data is incomplete");
+      tampilDialog("Alert", "Silahkan lengkapi data!");
     }
   }
 
@@ -321,10 +321,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           .child(userModel.uid)
           .set(userModel.toJson())
           .then((value) {
-        tampilDialog("Success", "Success Input Data");
+        tampilDialog("Success", "Sukses menyimpan data");
       }).catchError((onError) => tampilDialog("Alert", onError));
     } else {
-      tampilDialog("Alert", "Sorry data is incomplete");
+      tampilDialog("Alert", "Silahkan lengkapi data!");
     }
   }
 

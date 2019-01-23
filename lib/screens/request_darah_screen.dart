@@ -78,7 +78,7 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  "Identity",
+                  "Identitas",
                   style: TextStyle(
                     fontSize: 20.0,
                     fontWeight: FontWeight.w700,
@@ -95,7 +95,7 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
                     labelStyle: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
-                    labelText: "Name",
+                    labelText: "Nama",
                   ),
                 ),
                 TextField(
@@ -106,7 +106,7 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
                     labelStyle: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
-                    labelText: "Phone Number",
+                    labelText: "Nomor Telepon",
                   ),
                 ),
               ],
@@ -122,7 +122,7 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  "Description",
+                  "Deskripsi",
                   style: TextStyle(
                     fontSize: 20.0,
                     fontWeight: FontWeight.w700,
@@ -149,7 +149,7 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  "Blood type",
+                  "Tipe Darah",
                   style: TextStyle(
                     fontSize: 20.0,
                     fontWeight: FontWeight.w700,
@@ -201,7 +201,7 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  "Location",
+                  "Lokasi donor",
                   style: TextStyle(
                     fontSize: 20.0,
                     fontWeight: FontWeight.w700,
@@ -215,7 +215,7 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
                     labelStyle: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
-                    labelText: "Address",
+                    labelText: "Alamat",
                   ),
                   onChanged: (out) => requestDarahModel.address = out,
                   keyboardType: TextInputType.multiline,
@@ -259,7 +259,7 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
         child: isLoadinginput == true
             ? Center(child: CircularProgressIndicator())
             : RaisedButton(
-                child: Text("Request"),
+                child: Text("Kirim Permintaan"),
                 color: Colors.blue,
                 textColor: Colors.white,
                 elevation: 7.0,
@@ -307,7 +307,7 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
     String goldar = requestDarahModel.tipeDarah.toUpperCase();
 
     var url = data.cloudFunction +
-        "sendnotif?title=Donorkan darah anda&body=$body&lat=$latitude&lon=$longitude&radius=10&idRequest=$idRequest&golonganDarah=$goldar";
+        "/sendnotif?title=Donorkan darah anda&body=$body&lat=$latitude&lon=$longitude&radius=10&idRequest=$idRequest&golonganDarah=$goldar";
         // print(url);
     http.get(url).then((value) {
       _showDialog();
@@ -347,7 +347,7 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
         return AlertDialog(
           title: new Text("Success"),
           content: new Text(
-              "Your request has been broadcast to all member, please wait and hope.."),
+              "Permintaa anda sudah di sebarkan kepada member kami, silahkan menunggu dan berharap ...."),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(

@@ -61,7 +61,7 @@ class _MyAppState extends State<MyApp> {
     _firebaseMessaging.subscribeToTopic("requestDarah");
 
     _firebaseMessaging.getToken().then((token) {
-      print(token);
+      print("Token"+token);
     });
 
     _firebaseMessaging.configure(
