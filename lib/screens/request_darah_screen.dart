@@ -29,6 +29,8 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final mainReference = FirebaseDatabase.instance.reference();
 
+  double _sliderValue = 10.0;
+
   @override
   void initState() {
     super.initState();
@@ -210,6 +212,40 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
                 SizedBox(
                   height: 5.0,
                 ),
+                Text(
+                  "Radius Pendonor",
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Flexible(
+                        flex: 5,
+                        child: Slider(
+                          activeColor: Colors.indigoAccent,
+                          min: 0.0,
+                          max: 50.0,
+                          onChanged: (newRating) {
+                            setState(() => _sliderValue = newRating);
+                          },
+                          value: _sliderValue,
+                        )),
+                    Flexible(
+                        flex: 1,
+                        child: Container(
+                          width: 50.0,
+                          alignment: Alignment.center,
+                          child: Text('${_sliderValue.toInt()} KM',
+                              style: TextStyle(fontSize: 16.0)),
+                        )),
+                  ],
+                ),
+                SizedBox(
+                  height: 5.0,
+                ),
                 TextField(
                   decoration: InputDecoration(
                     labelStyle: TextStyle(
@@ -290,7 +326,7 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
   inputData() {
     // read the index key
     String idRequest = mainReference.child("requestDarah").push().key;
-    // print(mGroupId);
+    // print(_sliderValue);
     mainReference
         .child("requestDarah")
         .child(idRequest)
@@ -307,8 +343,8 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
     String goldar = requestDarahModel.tipeDarah.toUpperCase();
 
     var url = data.cloudFunction +
-        "/sendnotif?title=Donorkan darah anda&body=$body&lat=$latitude&lon=$longitude&radius=10&idRequest=$idRequest&golonganDarah=$goldar";
-        // print(url);
+        "/sendnotif?title=Donorkan darah anda&body=$body&lat=$latitude&lon=$longitude&radius=$_sliderValue&idRequest=$idRequest&golonganDarah=$goldar";
+    // print(url);
     http.get(url).then((value) {
       _showDialog();
     }).catchError((onError) => tampilDialog("Error", onError.toString()));
