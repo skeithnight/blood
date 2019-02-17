@@ -130,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
           onPressed: verifyPhone,
           color: Colors.lightBlueAccent,
           child: Text(
-            'Log In',
+            'Log In/Register',
             style: TextStyle(color: Colors.white),
           ),
         ),
