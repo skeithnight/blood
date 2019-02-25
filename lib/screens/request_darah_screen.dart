@@ -227,7 +227,7 @@ class _RequestDarahScreenState extends State<RequestDarahScreen> {
                         child: Slider(
                           activeColor: Colors.indigoAccent,
                           min: 0.0,
-                          max: 50.0,
+                          max: 15.0,
                           onChanged: (newRating) {
                             setState(() => _sliderValue = newRating);
                           },
